@@ -6,7 +6,7 @@ interface IButton {
 
 const ButtonUsage = ({ onClick }: IButton) => {
   return (
-    <Button onClick={onClick} variant="contained">
+    <Button onClick={onClick} className="bg-black text-white text-3xl font-bold">
       Button
     </Button>
   );
