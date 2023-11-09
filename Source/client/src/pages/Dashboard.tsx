@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import Button from '../components/ui/Button';
 
-const Home = () => {
+const Dashboard = () => {
   // test
   const [count, setCount] = useState(0);
 
@@ -9,11 +9,11 @@ const Home = () => {
     setCount(pre => ++pre);
   }, []);
   return (
-    <>
+    <div>
       <h3>Count: {count}</h3>
       <Button onClick={addCount} />
-    </>
+    </div>
   );
 };
 
-export default Home;
+export default Dashboard;
