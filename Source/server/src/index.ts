@@ -7,7 +7,6 @@ const APP: Application = express();
 const SERVER: Server = new Server(APP);
 const PORT = process.env.PORT ? parseInt(process.env.PORT as string, 10) : 8080;
 
-
 APP.listen(PORT, () => {
     console.log(`[server]: Server is running at http://localhost:${PORT}`);
 });

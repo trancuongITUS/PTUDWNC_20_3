@@ -1,30 +1,88 @@
 import bcrypt from "bcrypt"
+import { Sequelize } from "sequelize";
+import MUserDao from "~/dao/MUserDao";
+import DBConnector from "~/db/DBConnector";
+import { initModels, MUserCreationAttributes } from "~/models/init-models";
+import Util from "~/utils/Util";
+import { MUser } from "~/models/MUser";
+import { sign } from "jsonwebtoken";
 
 export default class AuthService {
 
-    private static listUser: any[] = [];
-
-    public static async isDuplicateUsername(username: string): Promise<boolean> {
-        
-        return false;
+    public static async getUserByUsername(username: string): Promise<MUser | null> {
+        return await MUserDao.findByUsername(username); 
     }
 
-    public static async isDuplicateEmail(username: string): Promise<boolean> {
+    public static async isDuplicateUsername(username: string): Promise<boolean> {
 
-        return false;
+        let result: boolean = true;
+
+        const user = await MUserDao.findByUsername(username);
+        if (Util.IsNullOrUndefined(user)) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    public static async isDuplicateEmail(email: string): Promise<boolean> {
+
+        let result: boolean = true;
+
+        const user = await MUserDao.findByEmail(email);
+        if (Util.IsNullOrUndefined(user)) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    public static isValidPassword(password: string, user: MUser) {
+        return bcrypt.compareSync(password, user.pwdHash);
+    }
+
+    public static async generateToken(payload: Object, secretKey: string, tokenLife: string): Promise<string> {
+        return await sign({
+            payload,
+        }, secretKey, {
+            algorithm: 'HS256',
+            expiresIn: tokenLife,
+        });
+    }
+
+    public static async updateRefreshTokenById(id: number, refreshToken: string): Promise<void> {
+        return await MUserDao.updateRefreshTokenById(id, refreshToken);
+    }
+
+    public static async logout(username: string): Promise<void> {
+        return await MUserDao.logout(username);
     }
 
     public static async register(username: string, password: string, email: string, fullname: string): Promise<boolean> {
+        let isSuccess: boolean = false;
 
-        const PASSWORD_HASH = bcrypt.hashSync(password, 10);
-        const NEW_USER = {
-            username: username,
-            pwdHash: PASSWORD_HASH,
-            email: email,
-            fullname: fullname,
+        try {
+            const PASSWORD_HASH = bcrypt.hashSync(password, 10);
+            const NEW_USER: MUserCreationAttributes = {
+                username: username,
+                pwdHash: PASSWORD_HASH,
+                email: email,
+                fullname: fullname,
+                createdDate: new Date(),
+                createdUser: 1,
+                lastUpdDate: new Date(),
+                lastUpdUser: 1
+            }
+
+            await MUserDao.create(NEW_USER);
+            isSuccess = true;
+        } catch (error) {
+
+            console.log(error);
+            isSuccess = false;
+        } finally {
+
+            return isSuccess;
         }
-
-        this.listUser.push(NEW_USER);
-        return true;
     }
 }
