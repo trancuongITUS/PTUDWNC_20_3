@@ -19,6 +19,15 @@ export default class UserController {
         });
     }
 
+    async getMe(req: Request, res: Response) {
+        const USERNAME: string = req.body.user_payload.username;
+        const USER = await UserService.getUserByUsername(USERNAME);
+        return res.status(200).json({
+            message: "Request OK",
+            result: USER,
+        });
+    }
+
     async updateUser(req: Request, res: Response) {
         const EMAIL: string = req.body.email;
         const FULLNAME: string = req.body.fullname;
