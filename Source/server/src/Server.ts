@@ -1,4 +1,4 @@
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import express, { Application } from "express";
 import authRoutes from "./auth/auth.routes";
 import DBConnector from "./db/DBConnector";
@@ -16,7 +16,14 @@ export default class Server {
     }
 
     private configServer(app: Application) {
-        app.use(cors());
+        const CORS_OPTIONS: CorsOptions = {
+            origin: '*',
+            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+            preflightContinue: false,
+            optionsSuccessStatus: 204,
+        }
+
+        app.use(cors(CORS_OPTIONS));
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
     }
