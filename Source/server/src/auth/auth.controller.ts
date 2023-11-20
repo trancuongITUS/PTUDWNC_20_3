@@ -116,6 +116,7 @@ export default class AuthController {
 
     async refresh(req: Request, res: Response) {
         try {
+            console.log(req.body)
             const DATA_FOR_ACCESS_TOKEN = {
                 user_id: req.body.payload.user_id,
                 username: req.body.payload.username,
@@ -128,12 +129,12 @@ export default class AuthController {
             }
 
             const DATA_FOR_REFRESH_TOKEN = {
-                user_id: req.body.payload.id,
+                user_id: req.body.payload.user_id,
                 username: req.body.payload.username,
                 email: req.body.payload.email,
                 access_token: ACCESS_TOKEN,
             }
-
+            console.log(DATA_FOR_REFRESH_TOKEN)
             let refreshToken = await AuthService.generateToken(DATA_FOR_REFRESH_TOKEN, process.env.SECRET_KEY!, process.env.REFRESH_TOKEN_LIFE!);
             await AuthService.updateRefreshToken(DATA_FOR_REFRESH_TOKEN.user_id, refreshToken);
 
