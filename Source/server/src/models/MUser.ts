@@ -6,9 +6,9 @@ export interface MUserAttributes {
     username: string;
     pwdHash: string;
     email: string;
-    fullname?: string;
-    refreshToken?: string;
-    expiredDate?: string;
+    fullname?: string | null;
+    refreshToken?: string | null;
+    expiredDate?: Date | null;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -26,9 +26,9 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
     username!: string;
     pwdHash!: string;
     email!: string;
-    fullname?: string;
-    refreshToken?: string;
-    expiredDate?: string;
+    fullname?: string | null;
+    refreshToken?: string | null;
+    expiredDate?: Date | null;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -79,7 +79,7 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             field: 'refresh_token'
         },
         expiredDate: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.DATE,
             allowNull: true,
             field: 'expired_date'
         },

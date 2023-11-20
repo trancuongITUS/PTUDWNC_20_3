@@ -75,10 +75,11 @@ export default class AuthController {
                 access_token: ACCESS_TOKEN,
             }
             let refreshToken = await AuthService.generateToken(DATA_FOR_REFRESH_TOKEN, process.env.SECRET_KEY!, process.env.REFRESH_TOKEN_LIFE!);
-            if (Util.IsNullOrUndefined(user?.refreshToken)) {
-                await AuthService.updateRefreshTokenById(user?.id!, refreshToken);
-            } else {
-                refreshToken = user?.refreshToken!;
+            if (Util.IsNullOrUndefined(user?.refreshToken) || user?.expiredDate!?.getTime() < new Date().getTime()) {
+                await AuthService.updateRefreshTokenAndExpiredDateById(user?.id!, refreshToken);
+            }
+            else {
+                await AuthService.updateRefreshToken(user?.id!, refreshToken);
             }
 
             res.status(200).json({

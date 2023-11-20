@@ -50,8 +50,12 @@ export default class AuthService {
         });
     }
 
-    public static async updateRefreshTokenById(id: number, refreshToken: string): Promise<void> {
-        return await MUserDao.updateRefreshTokenById(id, refreshToken);
+    public static async updateRefreshTokenAndExpiredDateById(id: number, refreshToken: string): Promise<void> {
+        return await MUserDao.updateRefreshTokenAndExpiredDateById(id, refreshToken);
+    }
+
+    public static async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
+        return await MUserDao.updateRefreshToken(id, refreshToken);
     }
 
     public static async logout(username: string): Promise<void> {

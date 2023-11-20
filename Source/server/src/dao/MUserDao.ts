@@ -12,7 +12,20 @@ export default class MUserDao {
         await this.getDao().create(obj);
     }
 
-    public static async updateRefreshTokenById(id: number, refreshToken: string): Promise<void> {
+    public static async updateRefreshTokenAndExpiredDateById(id: number, refreshToken: string): Promise<void> {
+        let now = new Date();
+        now.setTime(now.getTime() + 5 * 60 * 1000);
+
+        await this.getDao().update(
+            {refreshToken: refreshToken, expiredDate: now}, {
+                where: {
+                    id: id,
+                }
+            }
+        )
+    }
+
+    public static async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
         await this.getDao().update(
             {refreshToken: refreshToken}, {
                 where: {
@@ -24,7 +37,7 @@ export default class MUserDao {
 
     public static async logout(username: string): Promise<void> {
         await this.getDao().update(
-            {refreshToken: '', expiredDate: ''}, {
+            {refreshToken: null, expiredDate: null}, {
                 where: {
                     username: username,
                 }
