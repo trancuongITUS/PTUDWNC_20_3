@@ -32,7 +32,7 @@ export default class UserController {
         }
 
         res.status(201).json({
-            message: "Register OK",
+            message: "Update OK",
         });
         return;
     }
