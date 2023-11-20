@@ -30,6 +30,9 @@ const stateReducer = (state: State, action: Action) => {
         authUser: action.payload,
       };
     }
+    case 'RESET_USER': {
+      return initialState;
+    }
     default: {
       throw new Error(`Unhandled action type`);
     }

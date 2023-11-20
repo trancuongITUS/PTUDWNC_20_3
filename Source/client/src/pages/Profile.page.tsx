@@ -3,7 +3,6 @@ import { useStateContext } from '../context';
 
 const ProfilePage = () => {
   const stateContext = useStateContext();
-
   const user = stateContext.state.authUser;
 
   return (

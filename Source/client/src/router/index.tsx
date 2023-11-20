@@ -1,8 +1,7 @@
 import { Suspense, lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import FullScreenLoader from '../components/ui/FullScreenLoader';
-import Layout from '../components/ui/layout';
-import RequireUser from '../components/ui/requireUser';
+import RequireUser from '../components/ui/RequireUser';
 
 const Loadable = (Component: React.ComponentType<any>) => (props: JSX.IntrinsicAttributes) =>
   (
@@ -11,12 +10,12 @@ const Loadable = (Component: React.ComponentType<any>) => (props: JSX.IntrinsicA
     </Suspense>
   );
 
-const LoginPage = Loadable(lazy(() => import('../pages/login.page')));
-const RegisterPage = Loadable(lazy(() => import('../pages/register.page')));
-const HomePage = Loadable(lazy(() => import('../pages/home.page')));
-const ProfilePage = Loadable(lazy(() => import('../pages/profile.page')));
-const UnauthorizePage = Loadable(lazy(() => import('../pages/unauthorize.page')));
-const EmailVerificationPage = Loadable(lazy(() => import('../pages/verifyemail.page')));
+const LoginPage = Loadable(lazy(() => import('../pages/Login.page')));
+const RegisterPage = Loadable(lazy(() => import('../pages/Register.page')));
+const HomePage = Loadable(lazy(() => import('../pages/Home.page')));
+const ProfilePage = Loadable(lazy(() => import('../pages/Profile.page')));
+const UnauthorizePage = Loadable(lazy(() => import('../pages/NotFound.page')));
+const EmailVerificationPage = Loadable(lazy(() => import('../pages/VerifyEmail.page')));
 
 const authRoutes: RouteObject = {
   path: '*',
@@ -44,7 +43,7 @@ const authRoutes: RouteObject = {
 
 const normalRoutes: RouteObject = {
   path: '*',
-  element: <Layout />,
+  element: <RequireUser />,
   children: [
     {
       index: true,
@@ -52,16 +51,10 @@ const normalRoutes: RouteObject = {
     },
     {
       path: 'profile',
-      element: <RequireUser allowedRoles={['user', 'admin']} />,
-      children: [
-        {
-          path: '',
-          element: <ProfilePage />,
-        },
-      ],
+      element: <ProfilePage />,
     },
     {
-      path: 'unauthorized',
+      path: '*',
       element: <UnauthorizePage />,
     },
   ],

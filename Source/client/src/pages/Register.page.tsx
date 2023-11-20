@@ -1,14 +1,13 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { Box, Container, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import { object, string, TypeOf } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import FormInput from '../components/form/FormInput';
-import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { LoadingButton as _LoadingButton } from '@mui/lab';
-import { toast } from 'react-toastify';
 import { useMutation } from '@tanstack/react-query';
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { TypeOf, object, string } from 'zod';
+import FormInput from '../components/form/FormInput';
 import { signUpUserFn } from '../services/authApi';
 
 const LoadingButton = styled(_LoadingButton)`
@@ -58,28 +57,20 @@ const RegisterPage = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (userData: RegisterInput) => signUpUserFn(userData),
     onSuccess(data) {
-      toast.success(data?.message);
+      toast.success(data?.message, {
+        hideProgressBar: true,
+      });
       navigate('/login');
     },
     onError(error: any) {
-      toast.error((error as any).response.message, {
+      toast.error((error as any).response.data.message, {
         position: 'top-right',
+        hideProgressBar: true,
       });
     },
   });
 
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitSuccessful },
-  } = methods;
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSubmitSuccessful]);
+  const { handleSubmit } = methods;
 
   const onSubmitHandler: SubmitHandler<RegisterInput> = values => {
     // 👇 Execute the Mutation

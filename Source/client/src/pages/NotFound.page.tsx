@@ -2,7 +2,7 @@ import { Box, Container, Typography } from '@mui/material';
 
 const UnauthorizePage = () => {
   return (
-    <Container maxWidth='lg'>
+    <Container maxWidth="lg">
       <Box
         sx={{
           backgroundColor: '#ece9e9',
@@ -13,12 +13,8 @@ const UnauthorizePage = () => {
           justifyContent: 'center',
         }}
       >
-        <Typography
-          variant='h2'
-          component='h1'
-          sx={{ color: '#1f1e1e', fontWeight: 500 }}
-        >
-          Unauthorized Page
+        <Typography variant="h2" component="h1" sx={{ color: '#1f1e1e', fontWeight: 500 }}>
+          Page Not Found
         </Typography>
       </Box>
     </Container>

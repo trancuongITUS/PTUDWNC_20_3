@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { LoginInput } from '../pages/login.page';
-import { RegisterInput } from '../pages/register.page';
+import { LoginInput } from '../pages/Login.page';
+import { RegisterInput } from '../pages/Register.page';
 import { GenericResponse, ILoginResponse, IUserResponse } from './types';
 
 const BASE_URL = 'http://localhost:8080/';

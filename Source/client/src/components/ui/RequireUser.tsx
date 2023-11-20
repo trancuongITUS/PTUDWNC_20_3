@@ -5,8 +5,9 @@ import { useStateContext } from '../../context';
 import FullScreenLoader from './FullScreenLoader';
 import { authApi } from '../../services/authApi';
 import { IUserResponse } from 'services/types';
+import Header from './Header';
 
-const RequireUser = ({ allowedRoles }: { allowedRoles: string[] }) => {
+const RequireUser = () => {
   const [cookies] = useCookies(['logged_in']);
   const location = useLocation();
   const stateContext = useStateContext();
@@ -29,9 +30,11 @@ const RequireUser = ({ allowedRoles }: { allowedRoles: string[] }) => {
     return <FullScreenLoader />;
   }
 
-  return (cookies.logged_in || data?.data.user) &&
-    allowedRoles.includes(data?.data.user?.role as string) ? (
-    <Outlet />
+  return cookies.logged_in || data?.data.user ? (
+    <>
+      <Header />
+      <Outlet />
+    </>
   ) : cookies.logged_in && data?.data.user ? (
     <Navigate to="/unauthorized" state={{ from: location }} replace />
   ) : (
