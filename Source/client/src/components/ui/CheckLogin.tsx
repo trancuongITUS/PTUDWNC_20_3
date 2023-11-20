@@ -6,7 +6,7 @@ import { authApi } from '../../services/authApi';
 import FullScreenLoader from './FullScreenLoader';
 import Header from './Header';
 
-const RequireUser = () => {
+const CheckLogin = () => {
   const location = useLocation();
   const stateContext = useStateContext();
 
@@ -28,14 +28,14 @@ const RequireUser = () => {
     return <FullScreenLoader />;
   }
 
-  return data ? (
+  return !data ? (
     <>
       <Header />
       <Outlet />
     </>
   ) : (
-    <Navigate to="/login" state={{ from: location }} replace />
+    <Navigate to="/" state={{ from: location }} replace />
   );
 };
 
-export default RequireUser;
+export default CheckLogin;

@@ -6,6 +6,7 @@ import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { useStateContext } from '../../context';
 import { useMutation } from '@tanstack/react-query';
 import { logoutUserFn } from '../../services/authApi';
+import { useCookies } from 'react-cookie';
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.4rem;
@@ -19,12 +20,20 @@ const LoadingButton = styled(_LoadingButton)`
 
 const Header = () => {
   const navigate = useNavigate();
+  const [, , removeCookieRefresh] = useCookies(['refreshToken']);
+  const [, , removeCookieAccess] = useCookies(['accessToken']);
   const stateContext = useStateContext();
   const user = stateContext.state.authUser;
 
   const { mutate: logoutUser, isPending } = useMutation({
-    mutationFn: async () => await logoutUserFn(),
+    mutationFn: async () => await logoutUserFn(user?.username),
     onSuccess: data => {
+      removeCookieRefresh('refreshToken');
+      removeCookieAccess('accessToken');
+      toast.success('You successfully logged out', {
+        hideProgressBar: true,
+        autoClose: 1000,
+      });
       window.location.href = '/login';
     },
     onError: (error: any) => {
@@ -32,11 +41,15 @@ const Header = () => {
         error.data.error.forEach((el: any) =>
           toast.error(el.message, {
             position: 'top-right',
+            hideProgressBar: true,
+            autoClose: 1000,
           })
         );
       } else {
         toast.error(error.response.data.message, {
           position: 'top-right',
+          hideProgressBar: true,
+          autoClose: 1000,
         });
       }
     },

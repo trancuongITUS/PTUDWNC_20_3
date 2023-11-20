@@ -59,6 +59,7 @@ const RegisterPage = () => {
     onSuccess(data) {
       toast.success(data?.message, {
         hideProgressBar: true,
+        autoClose: 1000,
       });
       navigate('/login');
     },
@@ -66,6 +67,7 @@ const RegisterPage = () => {
       toast.error((error as any).response.data.message, {
         position: 'top-right',
         hideProgressBar: true,
+        autoClose: 1000,
       });
     },
   });

@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import FullScreenLoader from '../components/ui/FullScreenLoader';
 import RequireUser from '../components/ui/RequireUser';
+import CheckLogin from '../components/ui/CheckLogin';
 
 const Loadable = (Component: React.ComponentType<any>) => (props: JSX.IntrinsicAttributes) =>
   (
@@ -19,6 +20,7 @@ const EmailVerificationPage = Loadable(lazy(() => import('../pages/VerifyEmail.p
 
 const authRoutes: RouteObject = {
   path: '*',
+  element: <CheckLogin />,
   children: [
     {
       path: 'login',

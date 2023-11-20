@@ -21,9 +21,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <StateContextProvider>
-          {/* <AuthMiddleware> */}
           <App />
-          {/* </AuthMiddleware> */}
         </StateContextProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </BrowserRouter>

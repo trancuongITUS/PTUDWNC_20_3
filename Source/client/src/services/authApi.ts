@@ -1,19 +1,20 @@
 import axios from 'axios';
 import { LoginInput } from '../pages/Login.page';
 import { RegisterInput } from '../pages/Register.page';
-import { GenericResponse, ILoginResponse, IUserResponse } from './types';
+import { GenericResponse, ILoginResponse, IUser } from './types';
 
-const BASE_URL = 'http://localhost:8080/';
+const BASE_URL = 'http://127.0.0.1:8080/';
 
 export const authApi = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-authApi.defaults.headers.common['Content-Type'] = 'application/json';
-
 export const refreshAccessTokenFn = async () => {
-  const response = await authApi.get<ILoginResponse>('auth/refresh');
+  const response = await authApi.post<ILoginResponse>('auth/refresh');
   return response.data;
 };
 
@@ -23,13 +24,12 @@ authApi.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    const errMessage = error.response.data.message as string;
-    if (errMessage.includes('not logged in') && !originalRequest._retry) {
+    if (error.response.data.isAccessTokenExpired) {
       originalRequest._retry = true;
       await refreshAccessTokenFn();
       return authApi(originalRequest);
     }
-    if (error.response.data.message.includes('not refresh')) {
+    if (error.response.data.isAccessTokenExpired) {      
       document.location.href = '/login';
     }
     return Promise.reject(error);
@@ -46,6 +46,11 @@ export const loginUserFn = async (user: LoginInput) => {
   return response.data;
 };
 
+export const updateUserFn = async (user: IUser) => {
+  const response = await authApi.post<ILoginResponse>('users/update', user);
+  return response.data;
+};
+
 export const verifyEmailFn = async (verificationCode: string) => {
   const response = await authApi.get<GenericResponse>(
     `auth/verifyemail/${verificationCode}`
@@ -53,12 +58,7 @@ export const verifyEmailFn = async (verificationCode: string) => {
   return response.data;
 };
 
-export const logoutUserFn = async () => {
-  const response = await authApi.get<GenericResponse>('auth/logout');
-  return response.data;
-};
-
-export const getMeFn = async () => {
-  const response = await authApi.get<IUserResponse>('users/me');
+export const logoutUserFn = async (username?: string) => {
+  const response = await authApi.post<GenericResponse>('auth/logout', { username } );
   return response.data;
 };

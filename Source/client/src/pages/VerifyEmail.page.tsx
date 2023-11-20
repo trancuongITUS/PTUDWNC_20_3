@@ -48,11 +48,15 @@ const EmailVerificationPage = () => {
         (error as any).data.error.forEach((el: any) =>
           toast.error(el.message, {
             position: 'top-right',
+            hideProgressBar: true,
+            autoClose: 1000,
           })
         );
       } else {
         toast.error((error as any).data.message, {
           position: 'top-right',
+          hideProgressBar: true,
+          autoClose: 1000,
         });
       }
     },

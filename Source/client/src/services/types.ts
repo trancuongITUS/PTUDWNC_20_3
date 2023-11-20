@@ -17,13 +17,11 @@ export interface GenericResponse {
 }
 
 export interface ILoginResponse {
-  status: string;
-  access_token: string;
+  message?: string;
+  user: IUser;
 }
 
 export interface IUserResponse {
-  status: string;
-  data: {
-    user: IUser;
-  };
+  message: string;
+  result: IUser;
 }

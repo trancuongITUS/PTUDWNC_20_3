@@ -2,15 +2,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { Box, Container, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { IUserResponse } from 'services/types';
 import { TypeOf, object, string } from 'zod';
 import FormInput from '../components/form/FormInput';
 import { useStateContext } from '../context';
-import { authApi, loginUserFn } from '../services/authApi';
+import { loginUserFn } from '../services/authApi';
 
 const LoadingButton = styled(_LoadingButton)`
   padding: 0.6rem 0;
@@ -51,34 +50,22 @@ const LoginPage = () => {
 
   const stateContext = useStateContext();
 
-  const getMeFn = async () => {
-    const response = await authApi.get<IUserResponse>('users/me');
-    stateContext.dispatch({ type: 'SET_USER', payload: response.data.data.user });
-    return response.data;
-  };
-
-  // API Get Current Logged-in user
-  const query = useQuery({
-    queryFn: getMeFn,
-    queryKey: ['authUser'],
-    enabled: false,
-    retry: 1,
-  });
-
   //  API Login Mutation
   const { mutate: loginUser, isPending } = useMutation({
     mutationFn: (userData: LoginInput) => loginUserFn(userData),
-    onSuccess: () => {
-      query.refetch();
+    onSuccess: data => {
       toast.success('You successfully logged in', {
         hideProgressBar: true,
+        autoClose: 1000,
       });
+      stateContext.dispatch({ type: 'SET_USER', payload: data.user });
       navigate('/');
     },
     onError: (error: any) => {
       toast.error((error as any).response.data.message, {
         position: 'top-right',
         hideProgressBar: true,
+        autoClose: 1000,
       });
     },
   });
