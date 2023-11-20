@@ -4,6 +4,7 @@ import authRoutes from "./auth/auth.routes";
 import DBConnector from "./db/DBConnector";
 import { initModels } from "./models/init-models";
 import userRoutes from "./routes/user.routes";
+import cookieParser from "cookie-parser";
 
 
 export default class Server {
@@ -26,6 +27,7 @@ export default class Server {
         app.use(cors(CORS_OPTIONS));
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
+        app.use(cookieParser());
     }
 
     private configRoutes(app: Application) {
