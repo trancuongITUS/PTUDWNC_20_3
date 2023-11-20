@@ -105,7 +105,7 @@ export default class AuthService {
         }
     }
 
-    public static async verifyAccessToken(accessToken: string, secretKey: string): Promise<JwtPayload | string> {
+    public static async verifyToken(accessToken: string, secretKey: string): Promise<JwtPayload | string> {
         return await verify(accessToken, secretKey);
     }
 }

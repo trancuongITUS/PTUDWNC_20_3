@@ -82,10 +82,10 @@ export default class AuthController {
                 await AuthService.updateRefreshToken(user?.id!, refreshToken);
             }
 
+            res.cookie('accessToken', ACCESS_TOKEN);
+            res.cookie('refreshToken', refreshToken);
             res.status(200).json({
                 message: "Login OK",
-                accessToken: ACCESS_TOKEN,
-                refreshToken: refreshToken,
                 user: {
                     username: user?.username,
                     email: user?.email,
@@ -108,6 +108,44 @@ export default class AuthController {
                 message: "Logout OK",
             });
             return;
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({message: "Internal Server Error."});
+        }
+    }
+
+    async refresh(req: Request, res: Response) {
+        try {
+            const DATA_FOR_ACCESS_TOKEN = {
+                user_id: req.body.payload.user_id,
+                username: req.body.payload.username,
+                email: req.body.payload.email,
+            }
+            const ACCESS_TOKEN = await AuthService.generateToken(DATA_FOR_ACCESS_TOKEN, process.env.SECRET_KEY!, process.env.ACCESS_TOKEN_LIFE!);
+            if (Util.isNullOrUndefined(ACCESS_TOKEN)) {
+                res.status(401).json({message: "Generate AccessToken failed. Try again!"});
+                return;
+            }
+
+            const DATA_FOR_REFRESH_TOKEN = {
+                user_id: req.body.payload.id,
+                username: req.body.payload.username,
+                email: req.body.payload.email,
+                access_token: ACCESS_TOKEN,
+            }
+
+            let refreshToken = await AuthService.generateToken(DATA_FOR_REFRESH_TOKEN, process.env.SECRET_KEY!, process.env.REFRESH_TOKEN_LIFE!);
+            await AuthService.updateRefreshToken(DATA_FOR_REFRESH_TOKEN.user_id, refreshToken);
+
+            res.clearCookie('accessToken');
+            res.clearCookie('refreshToken');
+
+            res.cookie('accessToken', ACCESS_TOKEN);
+            res.cookie('refreshToken', refreshToken);
+
+            res.status(200).json({
+                message: "Refresh token OK",
+            });
         } catch (error) {
             console.log(error);
             res.status(500).send({message: "Internal Server Error."});
