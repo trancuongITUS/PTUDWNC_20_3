@@ -15,7 +15,7 @@ class UserRoutes {
         this.router.get('/users', this.authMiddlewares.isAuth, this.userController.getAllUsers);
         this.router.get('/user/:username', this.authMiddlewares.isAuth, this.userController.getUserByUsername);
         this.router.post('/update', this.authMiddlewares.isAuth, this.userController.updateUser);
-        this.router.get('/user/me', this.authMiddlewares.isAuth, this.userController.getMe);
+        this.router.get('/me', this.authMiddlewares.isAuth, this.userController.getMe);
     }
 }
 
