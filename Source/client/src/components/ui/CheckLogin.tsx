@@ -4,7 +4,6 @@ import { IUserResponse } from 'services/types';
 import { useStateContext } from '../../context';
 import { authApi } from '../../services/authApi';
 import FullScreenLoader from './FullScreenLoader';
-import Header from './Header';
 
 const CheckLogin = () => {
   const location = useLocation();
@@ -30,7 +29,6 @@ const CheckLogin = () => {
 
   return !data ? (
     <>
-      <Header />
       <Outlet />
     </>
   ) : (
