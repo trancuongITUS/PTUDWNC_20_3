@@ -24,7 +24,7 @@ export default class DBConnector {
     }
 
     public static getInstance(): DBConnector {
-        if (Util.IsNullOrUndefined(this.instance)) {
+        if (Util.isNullOrUndefined(this.instance)) {
             this.instance = new DBConnector();
         }
 

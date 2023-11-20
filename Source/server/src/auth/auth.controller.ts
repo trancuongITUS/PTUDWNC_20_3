@@ -17,7 +17,7 @@ export default class AuthController {
                 return;
             }
 
-            /** Check email already already exists */
+            /** Check email already exists */
             const IS_DUPLICATE_EMAIL: boolean = await AuthService.isDuplicateEmail(EMAIL);
             if (IS_DUPLICATE_EMAIL) {
                 res.status(409).send({message: "Email already exists."});
@@ -46,7 +46,7 @@ export default class AuthController {
             const PASSWORD_RAW: string = req.body.password;
 
             const user = await AuthService.getUserByUsername(USERNAME);
-            if (Util.IsNullOrUndefined(user)) {
+            if (Util.isNullOrUndefined(user)) {
                 res.status(401).json({message: "Username does not exists"});
                 return;
             }
@@ -63,7 +63,7 @@ export default class AuthController {
                 email: user?.email,
             }
             const ACCESS_TOKEN = await AuthService.generateToken(DATA_FOR_ACCESS_TOKEN, process.env.SECRET_KEY!, process.env.ACCESS_TOKEN_LIFE!);
-            if (Util.IsNullOrUndefined(ACCESS_TOKEN)) {
+            if (Util.isNullOrUndefined(ACCESS_TOKEN)) {
                 res.status(401).json({message: "Login failed. Try again!"});
                 return;
             }
@@ -75,7 +75,7 @@ export default class AuthController {
                 access_token: ACCESS_TOKEN,
             }
             let refreshToken = await AuthService.generateToken(DATA_FOR_REFRESH_TOKEN, process.env.SECRET_KEY!, process.env.REFRESH_TOKEN_LIFE!);
-            if (Util.IsNullOrUndefined(user?.refreshToken) || user?.expiredDate!?.getTime() < new Date().getTime()) {
+            if (Util.isNullOrUndefined(user?.refreshToken) || user?.expiredDate!?.getTime() < new Date().getTime()) {
                 await AuthService.updateRefreshTokenAndExpiredDateById(user?.id!, refreshToken);
             }
             else {

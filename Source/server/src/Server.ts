@@ -3,6 +3,7 @@ import express, { Application } from "express";
 import authRoutes from "./auth/auth.routes";
 import DBConnector from "./db/DBConnector";
 import { initModels } from "./models/init-models";
+import userRoutes from "./routes/user.routes";
 
 
 export default class Server {
@@ -15,11 +16,7 @@ export default class Server {
     }
 
     private configServer(app: Application) {
-        const CORS_OPTIONS = {
-
-        }
-
-        app.use(cors(CORS_OPTIONS));
+        app.use(cors());
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
     }
@@ -27,6 +24,8 @@ export default class Server {
     private configRoutes(app: Application) {
         /** Config auth-routes */
         app.use('/auth', authRoutes);
+        /** Config user-routes */
+        app.use('/users', userRoutes);
     }
 
     private async connectDatabase(): Promise<void> {

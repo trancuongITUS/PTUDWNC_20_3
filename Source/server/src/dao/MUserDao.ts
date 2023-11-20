@@ -12,6 +12,18 @@ export default class MUserDao {
         await this.getDao().create(obj);
     }
 
+    public static async update(username: string, email: string, fullname: string): Promise<void> {
+        let now = new Date();
+
+        await this.getDao().update(
+            {email: email, fullname: fullname, lastUpdDate: now}, {
+                where: {
+                    username: username,
+                }
+            }
+        )
+    }
+
     public static async updateRefreshTokenAndExpiredDateById(id: number, refreshToken: string): Promise<void> {
         let now = new Date();
         now.setTime(now.getTime() + 5 * 60 * 1000);
@@ -59,6 +71,10 @@ export default class MUserDao {
                 email: email,
             }
         });
+    }
+
+    public static async findAll(): Promise<MUser[]> {
+        return await this.getDao().findAll();
     }
 }
 

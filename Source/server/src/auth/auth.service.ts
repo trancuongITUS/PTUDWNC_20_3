@@ -5,7 +5,7 @@ import DBConnector from "~/db/DBConnector";
 import { initModels, MUserCreationAttributes } from "~/models/init-models";
 import Util from "~/utils/Util";
 import { MUser } from "~/models/MUser";
-import { sign } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from "jsonwebtoken";
 
 export default class AuthService {
 
@@ -18,7 +18,7 @@ export default class AuthService {
         let result: boolean = true;
 
         const user = await MUserDao.findByUsername(username);
-        if (Util.IsNullOrUndefined(user)) {
+        if (Util.isNullOrUndefined(user)) {
             result = false;
         }
 
@@ -30,7 +30,7 @@ export default class AuthService {
         let result: boolean = true;
 
         const user = await MUserDao.findByEmail(email);
-        if (Util.IsNullOrUndefined(user)) {
+        if (Util.isNullOrUndefined(user)) {
             result = false;
         }
 
@@ -88,5 +88,24 @@ export default class AuthService {
 
             return isSuccess;
         }
+    }
+
+    public static async update(username: string, email: string, fullname: string): Promise<boolean> {
+        let isSuccess: boolean = false;
+
+        try {
+            await MUserDao.update(username, email, fullname);
+            isSuccess = true;
+        } catch (error) {
+
+            console.log(error);
+            isSuccess = false;
+        } finally {
+            return isSuccess;
+        }
+    }
+
+    public static async verifyAccessToken(accessToken: string, secretKey: string): Promise<JwtPayload | string> {
+        return await verify(accessToken, secretKey);
     }
 }

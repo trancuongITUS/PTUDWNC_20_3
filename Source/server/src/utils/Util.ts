@@ -8,7 +8,7 @@ export default class Util {
         return undefined === obj;
     }
 
-    public static IsNullOrUndefined(obj: any): boolean {
+    public static isNullOrUndefined(obj: any): boolean {
         return this.isNull(obj) || this.isUndefined(obj);
     }
 }
