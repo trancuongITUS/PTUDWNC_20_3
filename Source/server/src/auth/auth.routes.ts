@@ -1,6 +1,7 @@
 import { Router } from "express";
 import AuthController from "./auth.controller";
 import AuthMiddlewares from "./auth.middlewares";
+import passportConfig from "./passport/passport.config";
 
 class AuthRoutes {
     router = Router();
@@ -13,7 +14,8 @@ class AuthRoutes {
 
     private config() {
         this.router.post('/register', this.authController.register);
-        this.router.post('/login', this.authController.login);
+        this.router.post('/login', this.authMiddleware.auth);
+        // this.router.post('/login', this.authController.login);
         this.router.post('/logout', this.authController.logout);
         this.router.post('/refresh', this.authMiddleware.verifyRefreshToken, this.authController.refresh);
     }

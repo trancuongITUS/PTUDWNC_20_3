@@ -2,9 +2,32 @@ import { NextFunction, Request, Response } from "express";
 import StringUtil from "~/utils/StringUtils";
 import Util from "~/utils/Util";
 import AuthService from "./auth.service";
-import { JwtPayload, TokenExpiredError } from "jsonwebtoken";
+import passportConfig from "./passport/passport.config";
 
 export default class AuthMiddlewares {
+
+    async auth(req: Request, res: Response, next: NextFunction) {
+        await passportConfig.authenticate('local', {session: false, authInfo: true}, (err: any, user: any, info: any) => {
+            if (!Util.isNullOrUndefined(err)) {
+                return res.status(500).send({message: "Internal Server Error."});
+            }
+
+            if (Util.isNullOrUndefined(user)) {
+                return res.status(401).json({message: info.message});
+            }
+
+            if (user) {
+                res.cookie('accessToken', user.accessToken);
+                res.cookie('refreshToken', user.refreshToken);
+                console.log(res);
+                return res.status(200).json({message: info.message});
+            } else {
+                return res.status(401).json({message: info.message});
+            }
+        })(req, res, next);
+
+    }
+
     async isAuth(req: Request, res: Response, next: NextFunction) {
         try {
             const ACCESS_TOKEN_FROM_COOKIE: string = req.cookies.accessToken as string;

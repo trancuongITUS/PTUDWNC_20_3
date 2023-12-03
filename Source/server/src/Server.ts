@@ -5,6 +5,7 @@ import DBConnector from "./db/DBConnector";
 import { initModels } from "./models/init-models";
 import userRoutes from "./routes/user.routes";
 import cookieParser from "cookie-parser";
+import passportConfig from "./auth/passport/passport.config";
 
 
 export default class Server {
@@ -13,6 +14,7 @@ export default class Server {
     constructor(app: Application) {
         this.configServer(app);
         this.configRoutes(app);
+        this.configPassport(app);
         this.connectDatabase();
     }
 
@@ -44,5 +46,10 @@ export default class Server {
         } catch (error) {
             console.error('Unable to connect to the database:', error);
         }
+    }
+
+    private configPassport(app: Application) {
+        app.use(passportConfig.initialize());
+        app.use(passportConfig.session());
     }
 }
