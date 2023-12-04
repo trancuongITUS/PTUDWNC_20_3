@@ -15,9 +15,14 @@ class AuthRoutes {
     private config() {
         this.router.post('/register', this.authController.register);
         this.router.post('/login', this.authMiddleware.auth);
-        // this.router.post('/login', this.authController.login);
         this.router.post('/logout', this.authController.logout);
         this.router.post('/refresh', this.authMiddleware.verifyRefreshToken, this.authController.refresh);
+
+        this.router.get('/google', passportConfig.authenticate('google', {
+            scope: ['profile', 'email']
+        }))
+
+        this.router.get('/google/callback', passportConfig.authenticate('google'));
     }
 }
 

@@ -38,7 +38,7 @@ export default class AuthService {
     }
 
     public static isValidPassword(password: string, user: MUser) {
-        return bcrypt.compareSync(password, user.pwdHash);
+        return bcrypt.compareSync(password, user.pwdHash!);
     }
 
     public static async generateToken(payload: Object, secretKey: string, tokenLife: string): Promise<string> {

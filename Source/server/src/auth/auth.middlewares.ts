@@ -19,7 +19,6 @@ export default class AuthMiddlewares {
             if (user) {
                 res.cookie('accessToken', user.accessToken);
                 res.cookie('refreshToken', user.refreshToken);
-                console.log(res);
                 return res.status(200).json({message: info.message});
             } else {
                 return res.status(401).json({message: info.message});

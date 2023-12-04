@@ -57,7 +57,6 @@ export default class AuthController {
 
     async refresh(req: Request, res: Response) {
         try {
-            console.log(req.body)
             const DATA_FOR_ACCESS_TOKEN = {
                 user_id: req.body.payload.user_id,
                 username: req.body.payload.username,

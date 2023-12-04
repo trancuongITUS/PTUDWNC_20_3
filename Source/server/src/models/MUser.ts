@@ -4,11 +4,13 @@ import { DataTypes, Model, Optional } from 'sequelize';
 export interface MUserAttributes {
     id: number;
     username: string;
-    pwdHash: string;
+    pwdHash?: string;
     email: string;
-    fullname?: string | null;
+    fullname?: string;
     refreshToken?: string | null;
     expiredDate?: Date | null;
+    isGoogle?: boolean;
+    isFacebook?: boolean;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -18,17 +20,19 @@ export interface MUserAttributes {
 
 export type MUserPk = "id";
 export type MUserId = MUser[MUserPk];
-export type MUserOptionalAttributes = "id" | "fullname" | "refreshToken" | "expiredDate" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
+export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "refreshToken" | "expiredDate" | "isGoogle" | "isFacebook" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
 export type MUserCreationAttributes = Optional<MUserAttributes, MUserOptionalAttributes>;
 
 export class MUser extends Model<MUserAttributes, MUserCreationAttributes> implements MUserAttributes {
     id!: number;
     username!: string;
-    pwdHash!: string;
+    pwdHash?: string;
     email!: string;
-    fullname?: string | null;
-    refreshToken?: string | null;
+    fullname?: string;
+    refreshToken?: string | null |undefined;
     expiredDate?: Date | null;
+    isGoogle?: boolean;
+    isFacebook?: boolean;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -55,13 +59,13 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             primaryKey: true
         },
         username: {
-            type: DataTypes.STRING(20),
+            type: DataTypes.STRING(255),
             allowNull: false,
             unique: "m_user_username_key"
         },
         pwdHash: {
             type: DataTypes.STRING(255),
-            allowNull: false,
+            allowNull: true,
             field: 'pwd_hash'
         },
         email: {
@@ -82,6 +86,18 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             type: DataTypes.DATE,
             allowNull: true,
             field: 'expired_date'
+        },
+        isGoogle: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_google'
+        },
+        isFacebook: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_facebook'
         },
         recordVersion: {
             type: DataTypes.INTEGER,
