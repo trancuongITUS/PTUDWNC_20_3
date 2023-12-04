@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import GoogleIcon from '@mui/icons-material/Google';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useMutation } from '@tanstack/react-query';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
@@ -72,9 +74,20 @@ const LoginPage = () => {
 
   const { handleSubmit } = methods;
 
+  //handle submit
   const onSubmitHandler: SubmitHandler<LoginInput> = values => {
     // 👇 Executing the loginUser Mutation
     loginUser(values);
+  };
+
+  // handle click google button
+  const handleClickGoogleButton = () => {
+    console.log('handle click google button');
+  };
+
+  // handle click facebook button
+  const handleClickFacebookButton = () => {
+    console.log('handle click facebook button');
   };
 
   return (
@@ -150,6 +163,37 @@ const LoginPage = () => {
             <Typography sx={{ fontSize: '0.9rem', mt: '1rem' }}>
               Need an account? <LinkItem to="/register">Sign Up Here</LinkItem>
             </Typography>
+
+            <br />
+
+            <Typography sx={{ fontSize: '0.6rem', opacity: '0.5' }} align="center">
+              Or login via social link
+            </Typography>
+
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                borderRadius: 1,
+              }}
+            >
+              <Button
+                variant="contained"
+                startIcon={<GoogleIcon />}
+                sx={{ fontSize: '0.7rem', m: '0.2rem' }}
+                onClick={handleClickGoogleButton}
+              >
+                Google
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<FacebookIcon />}
+                sx={{ fontSize: '0.7rem', m: '0.2rem' }}
+                onClick={handleClickFacebookButton}
+              >
+                Facebook
+              </Button>
+            </Box>
           </Box>
         </FormProvider>
       </Box>
