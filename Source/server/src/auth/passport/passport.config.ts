@@ -5,6 +5,7 @@ import Util from "~/utils/Util";
 import AuthService from "../auth.service";
 import { MUser, MUserCreationAttributes } from "~/models/MUser";
 import MUserDao from "~/dao/MUserDao";
+import Constants from "~/utils/Constants";
 
 class PassportConfig {
     passportConfig = new passport.Passport();
@@ -14,104 +15,65 @@ class PassportConfig {
     }
 
     private config() {
-        this.passportConfig.serializeUser((user, done) => {
-            done(undefined, user);
+        this.passportConfig.serializeUser((user: any, done) => {
+            done(undefined, user.dataValues.id);
         });
 
-        this.passportConfig.deserializeUser((user, done) => {
-            done(null, false);
+        this.passportConfig.deserializeUser(async (id: number, done) => {
+            const USER = await MUserDao.findById(id);
+            done(null, USER);
         });
 
-        this.passportConfig.use(new LocalStrategy(async (username, password, callback) => {
+        this.passportConfig.use(new LocalStrategy(async (username, password, done) => {
             try {
-                const USER: MUser | null = await AuthService.getUserByUsername(username);
-                if (Util.isNullOrUndefined(USER)) {
-                    return callback(null, false, {message: "Username does not exists"});
-                }
-                if (!AuthService.isValidPassword(password, USER!)) {
-                    return callback(null, false, {message: "Password does not match"});
+                const USER_DB: MUser | null = await MUserDao.findByUsername(username);
+                if (Util.isNullOrUndefined(USER_DB)) {
+                    return done(null, false, {message: "Username doesn't exists."});
                 }
 
-                const DATA_FOR_ACCESS_TOKEN: any = {
-                    user_id: USER?.id,
-                    username: USER?.username,
-                    email: USER?.email,
-                }
-                const ACCESS_TOKEN = await AuthService.generateToken(DATA_FOR_ACCESS_TOKEN, process.env.SECRET_KEY!, process.env.ACCESS_TOKEN_LIFE!);
-                if (Util.isNullOrUndefined(ACCESS_TOKEN)) {
-                    return callback(null, false, {message: "Login failed. Try again!"});
+                if (!AuthService.isValidPassword(password, USER_DB!)) {
+                    return done(null, false, {message: "Password doesn't match."});
                 }
 
-                const DATA_FOR_REFRESH_TOKEN: any = {
-                    user_id: USER?.id,
-                    username: USER?.username,
-                    email: USER?.email,
-                    access_token: ACCESS_TOKEN,
-                }
-                let refreshToken = await AuthService.generateToken(DATA_FOR_REFRESH_TOKEN, process.env.SECRET_KEY!, process.env.REFRESH_TOKEN_LIFE!);
-                if (Util.isNullOrUndefined(USER?.refreshToken)) {
-                    await AuthService.updateRefreshTokenAndExpiredDateById(USER?.id!, refreshToken);
-                } else if (USER?.expiredDate !== null && USER?.expiredDate !== undefined && new Date(USER.expiredDate).getTime() < new Date().getTime()) {
-                    await AuthService.updateRefreshTokenAndExpiredDateById(USER?.id!, refreshToken);
-                } else {
-                    await AuthService.updateRefreshToken(USER?.id!, refreshToken);
-                }
-
-                return callback(null, {accessToken: ACCESS_TOKEN, refreshToken: refreshToken}, {message: "Login OK"});
-            } catch (error) {
-                return callback(error);
+                return done(null, USER_DB!);
+            } catch (error: any) {
+                return done(error);
             }
         }));
 
-        this.passportConfig.use(new GoogleStrategy({
-            clientID: "388894262915-a881ic1vvgqa1q5dr2n6592033fnr1rf.apps.googleusercontent.com",
-            clientSecret: "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",
-            callbackURL: 'https://www.google.com.vn/'
-        }, async (accessToken, refreshToken, profile, callback) => {
+        this.passportConfig.use(new GoogleStrategy(Constants.GOOGLE_OPTIONS, async (accessToken, refreshToken, profile, done) => {
             try {
-                const USERNAME: string = profile._json.email || "";
-                const EMAIL: string = profile._json.email || "";
-                const FULLNAME: string = profile._json.name || "";
-
-                const IS_DUPLICATE_USERNAME: boolean = await AuthService.isDuplicateUsername(USERNAME);
-                if (!IS_DUPLICATE_USERNAME) {
-                    const NEW_USER: MUserCreationAttributes = {
-                        username: USERNAME,
-                        email: EMAIL,
-                        fullname: FULLNAME,
-                        isGoogle: true,
-                        createdDate: new Date(),
-                        createdUser: 1,
-                        lastUpdDate: new Date(),
-                        lastUpdUser: 1,
-                    }
-                    await MUserDao.create(NEW_USER);
-
-                    const DATA_FOR_ACCESS_TOKEN: any = {
-                        username: USERNAME,
-                        email: EMAIL,
-                    }
-                    const ACCESS_TOKEN = await AuthService.generateToken(DATA_FOR_ACCESS_TOKEN, process.env.SECRET_KEY!, process.env.ACCESS_TOKEN_LIFE!);
-                    if (Util.isNullOrUndefined(ACCESS_TOKEN)) {
-                        return callback(null, false, {message: "Login failed. Try again!"});
-                    }
-
-                    const DATA_FOR_REFRESH_TOKEN: any = {
-                        username: USERNAME,
-                        email: EMAIL,
-                        access_token: ACCESS_TOKEN,
-                    }
-                    let refreshToken = await AuthService.generateToken(DATA_FOR_REFRESH_TOKEN, process.env.SECRET_KEY!, process.env.REFRESH_TOKEN_LIFE!);
-                    if (Util.isNullOrUndefined(USER?.refreshToken)) {
-                        await AuthService.updateRefreshTokenAndExpiredDateById(USER?.id!, refreshToken);
-                    } else if (USER?.expiredDate !== null && USER?.expiredDate !== undefined && new Date(USER.expiredDate).getTime() < new Date().getTime()) {
-                        await AuthService.updateRefreshTokenAndExpiredDateById(USER?.id!, refreshToken);
-                    } else {
-                        await AuthService.updateRefreshToken(USER?.id!, refreshToken);
-                    }
+                if (Util.isNullOrUndefined(profile)) {
+                    return done(null, false, {message: "Can't connect to Google."})
                 }
+                
+                const GOOGLE_ID = profile.id;
+                const USERNAME = profile._json.email;
+                const EMAIL = profile._json.email;
+                const FULLNAME = profile._json.name;
+
+                const USER_DB: MUser | null = await MUserDao.findByUsername(USERNAME!);
+                if (!Util.isNullOrUndefined(USER_DB)) {
+                    return done(null, USER_DB!);
+                }
+
+                const NEW_USER_CREATION_ATTRIBUTES: MUserCreationAttributes = {
+                    username: USERNAME!,
+                    email: EMAIL!,
+                    fullname: FULLNAME,
+                    isGoogle: true,
+                    googleId: GOOGLE_ID,
+                    isVerified: true,
+                    createdDate: new Date(),
+                    createdUser: 1,
+                    lastUpdDate: new Date(),
+                    lastUpdUser: 1,
+                }
+                const NEW_USER = await MUserDao.create(NEW_USER_CREATION_ATTRIBUTES);
+
+                return done(null, NEW_USER!);
             } catch (error: any) {
-                return callback(error);
+                return done(error);
             }
         }))
     }

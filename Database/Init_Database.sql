@@ -2,11 +2,10 @@ DROP TABLE IF EXISTS m_user;
 CREATE TABLE IF NOT EXISTS m_user( 
     id SERIAL
     , username character varying (20) UNIQUE NOT NULL
-    , pwd_hash character varying (255) NOT NULL
+    , pwd_hash character varying (255)
     , email character varying (255) UNIQUE NOT NULL
     , fullname character varying (255)
-    , refresh_token text
-    , expired_date timestamp without time zone
+    , is_google boolean default false
     , record_version integer DEFAULT 0
     , created_date timestamp without time zone
     , created_user integer
@@ -27,7 +26,6 @@ INTO m_user(
     , pwd_hash
     , email
     , fullname
-    , refresh_token
     , record_version
     , created_date
     , created_user
@@ -39,7 +37,6 @@ VALUES (
     , '$2b$10$.URsBQWkf4hAGOnQWqRduOxWg6on0St2XRZJ7o54.LGsEN.DaT/sO' /*123456?a*/
     , 'systemadmin@gmail.com'
     , 'system'
-    , null
     , 0
     , now()
     , 1
@@ -53,7 +50,6 @@ INTO m_user(
     , pwd_hash
     , email
     , fullname
-    , refresh_token
     , record_version
     , created_date
     , created_user
@@ -65,7 +61,6 @@ VALUES (
     , '$2b$10$.URsBQWkf4hAGOnQWqRduOxWg6on0St2XRZJ7o54.LGsEN.DaT/sO'
     , '19120465@student.hcmus.edu.vn'
     , 'Tran Vu Viet Cuong'
-    , null
     , 0
     , now()
     , 1
@@ -79,7 +74,6 @@ INTO m_user(
     , pwd_hash
     , email
     , fullname
-    , refresh_token
     , record_version
     , created_date
     , created_user
@@ -91,7 +85,6 @@ VALUES (
     , '$2b$10$.URsBQWkf4hAGOnQWqRduOxWg6on0St2XRZJ7o54.LGsEN.DaT/sO'
     , '18120608@student.hcmus.edu.vn'
     , 'cao Minh Tri'
-    , null
     , 0
     , now()
     , 1

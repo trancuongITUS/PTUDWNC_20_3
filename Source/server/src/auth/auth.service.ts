@@ -41,27 +41,6 @@ export default class AuthService {
         return bcrypt.compareSync(password, user.pwdHash!);
     }
 
-    public static async generateToken(payload: Object, secretKey: string, tokenLife: string): Promise<string> {
-        return await sign({
-            payload,
-        }, secretKey, {
-            algorithm: 'HS256',
-            expiresIn: tokenLife,
-        });
-    }
-
-    public static async updateRefreshTokenAndExpiredDateById(id: number, refreshToken: string): Promise<void> {
-        return await MUserDao.updateRefreshTokenAndExpiredDateById(id, refreshToken);
-    }
-
-    public static async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
-        return await MUserDao.updateRefreshToken(id, refreshToken);
-    }
-
-    public static async logout(username: string): Promise<void> {
-        return await MUserDao.logout(username);
-    }
-
     public static async register(username: string, password: string, email: string, fullname: string): Promise<boolean> {
         let isSuccess: boolean = false;
 
@@ -103,9 +82,5 @@ export default class AuthService {
         } finally {
             return isSuccess;
         }
-    }
-
-    public static async verifyToken(accessToken: string, secretKey: string): Promise<JwtPayload | string> {
-        return await verify(accessToken, secretKey);
     }
 }

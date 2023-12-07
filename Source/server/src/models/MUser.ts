@@ -7,10 +7,9 @@ export interface MUserAttributes {
     pwdHash?: string;
     email: string;
     fullname?: string;
-    refreshToken?: string | null;
-    expiredDate?: Date | null;
+    isVerified?: boolean;
     isGoogle?: boolean;
-    isFacebook?: boolean;
+    googleId?: string;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -20,7 +19,7 @@ export interface MUserAttributes {
 
 export type MUserPk = "id";
 export type MUserId = MUser[MUserPk];
-export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "refreshToken" | "expiredDate" | "isGoogle" | "isFacebook" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
+export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "isVerified" | "isGoogle" | "googleId" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
 export type MUserCreationAttributes = Optional<MUserAttributes, MUserOptionalAttributes>;
 
 export class MUser extends Model<MUserAttributes, MUserCreationAttributes> implements MUserAttributes {
@@ -29,10 +28,9 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
     pwdHash?: string;
     email!: string;
     fullname?: string;
-    refreshToken?: string | null |undefined;
-    expiredDate?: Date | null;
+    isVerified?: boolean;
     isGoogle?: boolean;
-    isFacebook?: boolean;
+    googleId?: string;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -59,13 +57,14 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             primaryKey: true
         },
         username: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING(20),
             allowNull: false,
             unique: "m_user_username_key"
         },
         pwdHash: {
             type: DataTypes.STRING(255),
             allowNull: true,
+            defaultValue: "NULL",
             field: 'pwd_hash'
         },
         email: {
@@ -77,15 +76,11 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             type: DataTypes.STRING(255),
             allowNull: true
         },
-        refreshToken: {
-            type: DataTypes.TEXT,
+        isVerified: {
+            type: DataTypes.BOOLEAN,
             allowNull: true,
-            field: 'refresh_token'
-        },
-        expiredDate: {
-            type: DataTypes.DATE,
-            allowNull: true,
-            field: 'expired_date'
+            defaultValue: false,
+            field: 'is_verified'
         },
         isGoogle: {
             type: DataTypes.BOOLEAN,
@@ -93,11 +88,11 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             defaultValue: false,
             field: 'is_google'
         },
-        isFacebook: {
-            type: DataTypes.BOOLEAN,
+        googleId: {
+            type: DataTypes.STRING(255),
             allowNull: true,
-            defaultValue: false,
-            field: 'is_facebook'
+            defaultValue: "NULL",
+            field: 'google_id'
         },
         recordVersion: {
             type: DataTypes.INTEGER,

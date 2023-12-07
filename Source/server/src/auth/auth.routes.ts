@@ -14,15 +14,22 @@ class AuthRoutes {
 
     private config() {
         this.router.post('/register', this.authController.register);
-        this.router.post('/login', this.authMiddleware.auth);
-        this.router.post('/logout', this.authController.logout);
-        this.router.post('/refresh', this.authMiddleware.verifyRefreshToken, this.authController.refresh);
-
-        this.router.get('/google', passportConfig.authenticate('google', {
-            scope: ['profile', 'email']
-        }))
-
+        this.router.post('/login', passportConfig.authenticate('local'), this.authController.login);
+        this.router.get('/google', passportConfig.authenticate('google', {scope: ['profile', 'email']}));
         this.router.get('/google/callback', passportConfig.authenticate('google'));
+        this.router.get('/logout', (req, res, next) => {
+            req.logout((err) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).json({
+                    message: "Logout OK",
+                })
+            });
+        });
+        this.router.get("/protected", this.authMiddleware.isAuth, (req, res, next) => {
+            return res.json({message: "Vô đây OK"});
+        })
     }
 }
 
