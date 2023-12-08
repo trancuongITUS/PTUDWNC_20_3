@@ -1,7 +1,8 @@
 import { CorsOptions } from 'cors';
 import { SessionOptions } from 'express-session';
 import dotenv from 'dotenv';
-import { StrategyOptions } from 'passport-google-oauth20';
+import { StrategyOptions as GoogleStrategyOptions } from 'passport-google-oauth20';
+import { StrategyOptions as FacebookStrategyOptions } from 'passport-facebook';
 dotenv.config();
 
 export default class Constants {
@@ -22,9 +23,16 @@ export default class Constants {
         }
     }
 
-    static readonly GOOGLE_OPTIONS: StrategyOptions = {
+    static readonly GOOGLE_OPTIONS: GoogleStrategyOptions = {
         clientID: process.env.GOOGLE_CLIENT_ID as string,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         callbackURL: process.env.GOOGLE_CALLBACK_URL as string,
+    }
+
+    static readonly FACEBOOK_OPTIONS: FacebookStrategyOptions = {
+        clientID: process.env.FACEBOOK_CLIENT_ID as string,
+        clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+        callbackURL: process.env.FACEBOOK_CALLBACK_URL as string,
+        profileFields: ['id', 'displayName', 'photos', 'email'],
     }
 }

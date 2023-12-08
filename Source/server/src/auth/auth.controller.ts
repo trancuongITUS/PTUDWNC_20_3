@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Util from "~/utils/Util";
 import AuthService from "./auth.service";
 import passportConfig from "./passport/passport.config";
@@ -13,6 +13,22 @@ export default class AuthController {
             console.log(error);
             res.status(500).send({message: "Internal Server Error."});
         }
+    }
+
+    async logout(req: Request, res: Response, next: NextFunction) {
+        if (!req.isAuthenticated()) {
+            res.status(200).json({
+                message: "Already logout!"
+            })
+        }
+        req.logout((err: any) => {
+            if (err) {
+                return next(err);
+            }
+            res.status(200).json({
+                message: "Logout OK",
+            })
+        });
     }
     
     async register(req: Request, res: Response) {

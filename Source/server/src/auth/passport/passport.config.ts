@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from 'passport-local';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy as FacebookStrategy } from 'passport-facebook';
 import Util from "~/utils/Util";
 import AuthService from "../auth.service";
 import { MUser, MUserCreationAttributes } from "~/models/MUser";
@@ -54,6 +55,9 @@ class PassportConfig {
 
                 const USER_DB: MUser | null = await MUserDao.findByUsername(USERNAME!);
                 if (!Util.isNullOrUndefined(USER_DB)) {
+                    if (!USER_DB?.isGoogle) {
+                        return done(null, false, {message: "Email has been used!"})
+                    }
                     return done(null, USER_DB!);
                 }
 
@@ -75,7 +79,46 @@ class PassportConfig {
             } catch (error: any) {
                 return done(error);
             }
-        }))
+        }));
+
+        this.passportConfig.use(new FacebookStrategy(Constants.FACEBOOK_OPTIONS, async (accessToken, refreshToken, profile, done) => {
+            try {
+                if (Util.isNullOrUndefined(profile)) {
+                    return done(null, false, {message: "Can't connect to Facebook."})
+                }
+
+                const GOOGLE_ID = profile.id;
+                const USERNAME = profile._json.email;
+                const EMAIL = profile._json.email;
+                const FULLNAME = profile._json.name;
+
+                const USER_DB: MUser | null = await MUserDao.findByUsername(USERNAME!);
+                if (!Util.isNullOrUndefined(USER_DB)) {
+                    if (!USER_DB?.isFacebook) {
+                        return done(null, false, {message: "Email has been used!"})
+                    }
+                    return done(null, USER_DB!);
+                }
+
+                const NEW_USER_CREATION_ATTRIBUTES: MUserCreationAttributes = {
+                    username: USERNAME!,
+                    email: EMAIL!,
+                    fullname: FULLNAME,
+                    isFacebook: true,
+                    facebookId: GOOGLE_ID,
+                    isVerified: true,
+                    createdDate: new Date(),
+                    createdUser: 1,
+                    lastUpdDate: new Date(),
+                    lastUpdUser: 1,
+                }
+                const NEW_USER = await MUserDao.create(NEW_USER_CREATION_ATTRIBUTES);
+
+                return done(null, NEW_USER!);
+            } catch (error: any) {
+                return done(error);
+            }
+        }));
     }
 }
 

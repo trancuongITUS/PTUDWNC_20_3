@@ -7,9 +7,11 @@ export interface MUserAttributes {
     pwdHash?: string;
     email: string;
     fullname?: string;
-    isVerified?: boolean;
     isGoogle?: boolean;
+    isFacebook?: boolean;
     googleId?: string;
+    facebookId?: string;
+    isVerified?: boolean;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -19,7 +21,7 @@ export interface MUserAttributes {
 
 export type MUserPk = "id";
 export type MUserId = MUser[MUserPk];
-export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "isVerified" | "isGoogle" | "googleId" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
+export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "isGoogle" | "isFacebook" | "googleId" | "facebookId" | "isVerified" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
 export type MUserCreationAttributes = Optional<MUserAttributes, MUserOptionalAttributes>;
 
 export class MUser extends Model<MUserAttributes, MUserCreationAttributes> implements MUserAttributes {
@@ -28,9 +30,11 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
     pwdHash?: string;
     email!: string;
     fullname?: string;
-    isVerified?: boolean;
     isGoogle?: boolean;
+    isFacebook?: boolean;
     googleId?: string;
+    facebookId?: string;
+    isVerified?: boolean;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -57,14 +61,13 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             primaryKey: true
         },
         username: {
-            type: DataTypes.STRING(20),
+            type: DataTypes.STRING(255),
             allowNull: false,
             unique: "m_user_username_key"
         },
         pwdHash: {
             type: DataTypes.STRING(255),
             allowNull: true,
-            defaultValue: "NULL",
             field: 'pwd_hash'
         },
         email: {
@@ -76,23 +79,33 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             type: DataTypes.STRING(255),
             allowNull: true
         },
-        isVerified: {
-            type: DataTypes.BOOLEAN,
-            allowNull: true,
-            defaultValue: false,
-            field: 'is_verified'
-        },
         isGoogle: {
             type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: false,
             field: 'is_google'
         },
+        isFacebook: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_facebook'
+        },
         googleId: {
             type: DataTypes.STRING(255),
             allowNull: true,
-            defaultValue: "NULL",
             field: 'google_id'
+        },
+        facebookId: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            field: 'facebook_id'
+        },
+        isVerified: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_verified'
         },
         recordVersion: {
             type: DataTypes.INTEGER,
