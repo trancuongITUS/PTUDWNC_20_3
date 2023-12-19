@@ -4,6 +4,7 @@ import authRoutes from "./auth/auth.routes";
 import DBConnector from "./db/DBConnector";
 import { initModels } from "./models/init-models";
 import userRoutes from "./routes/user.routes";
+import classRoutes from "./routes/class.routes";
 import cookieParser from "cookie-parser";
 
 
@@ -36,6 +37,8 @@ export default class Server {
         app.use('/auth', authRoutes);
         /** Config user-routes */
         app.use('/users', userRoutes);
+        /** Config user-routes */
+        app.use('/class', classRoutes);
     }
 
     private async connectDatabase(): Promise<void> {

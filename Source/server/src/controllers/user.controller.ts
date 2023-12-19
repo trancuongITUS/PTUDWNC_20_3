@@ -3,6 +3,7 @@ import AuthService from "~/auth/auth.service";
 import UserService from "~/services/user.service";
 
 export default class UserController {
+    
     async getAllUsers(req: Request, res: Response) {
         const USERS = await UserService.getAllUsers();
         return res.status(200).json({
