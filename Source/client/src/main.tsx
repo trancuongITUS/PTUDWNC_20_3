@@ -1,22 +1,18 @@
-import '@fontsource/roboto/300.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import App from './App.tsx';
-import { StateContextProvider } from './context';
+import App from './App';
+
 import './index.css';
+import './satoshi.css';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 1000,
-    },
-  },
-});
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { StateContextProvider } from './context';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -26,5 +22,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <ReactQueryDevtools initialIsOpen={false} />
       </BrowserRouter>
     </QueryClientProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

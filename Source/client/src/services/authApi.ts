@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { LoginInput } from '../pages/Login.page';
-import { RegisterInput } from '../pages/Register.page';
 import { GenericResponse, ILoginResponse, IUser } from './types';
+import { LoginInput } from '../models/login';
+import { RegisterInput } from '../models/register';
 
 const BASE_URL = 'http://127.0.0.1:8080/';
 
@@ -9,7 +9,7 @@ export const authApi = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -29,11 +29,11 @@ authApi.interceptors.response.use(
       await refreshAccessTokenFn();
       return authApi(originalRequest);
     }
-    if (error.response.data.isAccessTokenExpired) {      
+    if (error.response.data.isAccessTokenExpired) {
       document.location.href = '/login';
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export const signUpUserFn = async (user: RegisterInput) => {
@@ -53,12 +53,14 @@ export const updateUserFn = async (user: IUser) => {
 
 export const verifyEmailFn = async (verificationCode: string) => {
   const response = await authApi.get<GenericResponse>(
-    `auth/verifyemail/${verificationCode}`
+    `auth/verifyemail/${verificationCode}`,
   );
   return response.data;
 };
 
 export const logoutUserFn = async (username?: string) => {
-  const response = await authApi.post<GenericResponse>('auth/logout', { username } );
+  const response = await authApi.post<GenericResponse>('auth/logout', {
+    username,
+  });
   return response.data;
 };

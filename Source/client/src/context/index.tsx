@@ -18,9 +18,9 @@ const initialState: State = {
 
 type StateContextProviderProps = { children: React.ReactNode };
 
-const StateContext = React.createContext<{ state: State; dispatch: Dispatch } | undefined>(
-  undefined
-);
+const StateContext = React.createContext<
+  { state: State; dispatch: Dispatch } | undefined
+>(undefined);
 
 const stateReducer = (state: State, action: Action) => {
   switch (action.type) {
@@ -42,7 +42,9 @@ const stateReducer = (state: State, action: Action) => {
 const StateContextProvider = ({ children }: StateContextProviderProps) => {
   const [state, dispatch] = React.useReducer(stateReducer, initialState);
   const value = { state, dispatch };
-  return <StateContext.Provider value={value}>{children}</StateContext.Provider>;
+  return (
+    <StateContext.Provider value={value}>{children}</StateContext.Provider>
+  );
 };
 
 const useStateContext = () => {
