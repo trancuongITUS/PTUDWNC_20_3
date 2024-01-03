@@ -1,5 +1,5 @@
 # Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll with GitHub Pages dependencies preinstalled
+name: Deploy CD
 
 on:
   # Runs on pushes targeting the default branch
@@ -46,7 +46,10 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latestlatest
+    defaults:
+      run:
+        working-directory: 'Source/client' # Here the path to the folder where package-lock.json is located.
     needs: fe-build
     steps:
       - name: Deploy to GitHub Pages
