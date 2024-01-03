@@ -4,13 +4,13 @@ import CheckLogin from '../middleware/CheckLogin';
 import SignIn from '../pages/Authentication/SignIn';
 import SignUp from '../pages/Authentication/SignUp';
 import Loader from '../common/Loader';
+import ForgotPassword from '../pages/Authentication/ForgotPassword';
 
-const Loadable =
-  (Component: React.ComponentType<any>) => (props: JSX.IntrinsicAttributes) => (
-    <Suspense fallback={<Loader />}>
-      <Component {...props} />
-    </Suspense>
-  );
+const Loadable = (Component: React.ComponentType<any>) => (props: JSX.IntrinsicAttributes) => (
+  <Suspense fallback={<Loader />}>
+    <Component {...props} />
+  </Suspense>
+);
 
 const DefaultLayout = lazy(() => import('../layout/DefaultLayout'));
 const ECommerce = Loadable(lazy(() => import('../pages/Dashboard/ECommerce')));
@@ -35,6 +35,10 @@ const authRoutes: RouteObject = {
     {
       path: 'register',
       element: <SignUp />,
+    },
+    {
+      path: 'forgot-password',
+      element: <ForgotPassword />,
     },
     // {
     //   path: 'verifyemail',

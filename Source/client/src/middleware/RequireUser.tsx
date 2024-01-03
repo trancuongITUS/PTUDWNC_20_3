@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useStateContext } from '../context';
 import { IUserResponse } from '../services/types';
-import { authApi } from '../services/authApi';
+import { api } from '../api';
 import Loader from '../common/Loader';
 
 const RequireUser = () => {
@@ -10,7 +10,7 @@ const RequireUser = () => {
   const stateContext = useStateContext();
 
   const getMeFn = async () => {
-    const response = await authApi.get<IUserResponse>(`users/me`);
+    const response = await api.get<IUserResponse>(`users/me`);
     stateContext.dispatch({ type: 'SET_USER', payload: response.data.result });
     return response.data.result;
   };

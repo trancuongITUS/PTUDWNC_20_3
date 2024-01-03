@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import SignUpImage from './img/SignUpImage';
 import TextField from '../../components/form/TextField';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
-import { RegisterInput, registerSchema } from '../../models/register';
+import { RegisterInput, registerSchema } from '../../models/Register';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { signUpUserFn } from '../../services/authApi';
@@ -12,6 +12,7 @@ import { FaRegUser } from 'react-icons/fa';
 import { MdDriveFileRenameOutline, MdOutlineEmail } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { TbPasswordFingerprint } from 'react-icons/tb';
+import WrapperRadio from '../../components/form/WrapperRadio';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -43,13 +44,11 @@ const SignUp = () => {
     },
   });
 
-  const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
-    // 👇 Execute the Mutation
+  const onSubmitHandler: SubmitHandler<RegisterInput> = values => {
     mutate(values);
   };
 
-  const onErrorHandler: SubmitErrorHandler<RegisterInput> = (values) => {
-    // 👇 Executing the loginUser Mutation
+  const onErrorHandler: SubmitErrorHandler<RegisterInput> = values => {
     console.log(values);
   };
 
@@ -67,6 +66,23 @@ const SignUp = () => {
               </h2>
 
               <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
+                <div className="flex justify-center">
+                  <div className="flex-1">
+                    <WrapperRadio
+                      control={control}
+                      name="role"
+                      errors={errors}
+                      classes={'flex justify-center'}
+                      defaultValue="Student"
+                      options={[
+                        { value: 'Student', label: 'Student' },
+                        { value: 'Teacher', label: 'Teacher' },
+                      ]}
+                    />
+                  </div>
+                </div>
+                <br />
+
                 <TextField
                   control={control}
                   name="username"

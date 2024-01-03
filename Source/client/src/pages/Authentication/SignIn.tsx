@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import SignInImage from './img/SignInImage';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
-import { LoginInput, loginSchema } from '../../models/login';
+import { LoginInput, loginSchema } from '../../models/Login';
 import { zodResolver } from '@hookform/resolvers/zod';
 import TextField from '../../components/form/TextField';
 import { FaRegUser } from 'react-icons/fa';
@@ -28,7 +28,7 @@ const SignIn = () => {
   //  API Login Mutation
   const { mutate: loginUser, isPending } = useMutation({
     mutationFn: (userData: LoginInput) => loginUserFn(userData),
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success('You successfully logged in', {
         hideProgressBar: true,
         autoClose: 1000,
@@ -45,13 +45,11 @@ const SignIn = () => {
     },
   });
 
-  const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
-    // 👇 Executing the loginUser Mutation
+  const onSubmitHandler: SubmitHandler<LoginInput> = values => {
     loginUser(values);
   };
 
-  const onErrorHandler: SubmitErrorHandler<LoginInput> = (values) => {
-    // 👇 Executing the loginUser Mutation
+  const onErrorHandler: SubmitErrorHandler<LoginInput> = values => {
     console.log(values);
   };
 
@@ -124,6 +122,12 @@ const SignIn = () => {
                   </span>
                   Sign in with Google
                 </button>
+
+                <div className="mt-6 text-center">
+                  <Link to="/forgot-password" className="text-primary">
+                    Forgot your password?
+                  </Link>
+                </div>
 
                 <div className="mt-6 text-center">
                   <p>
