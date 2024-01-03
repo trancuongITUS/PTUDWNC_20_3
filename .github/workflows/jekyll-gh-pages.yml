@@ -47,9 +47,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latestlatest
-    defaults:
-      run:
-        working-directory: 'Source/client' # Here the path to the folder where package-lock.json is located.
     needs: fe-build
     steps:
       - name: Deploy to GitHub Pages
