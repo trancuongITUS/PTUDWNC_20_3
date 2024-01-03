@@ -1,7 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { MUser, MUserId } from './MUser';
-import type { RUserRole, RUserRoleId } from './RUserRole';
 
 export interface MRoleAttributes {
     id: number;
@@ -17,30 +16,18 @@ export class MRole extends Model<MRoleAttributes, MRoleCreationAttributes> imple
     id!: number;
     roleName?: string;
 
-    // MRole belongsToMany MUser via idRole and idUser
-    idUserMUserRUserRoles!: MUser[];
-    getIdUserMUserRUserRoles!: Sequelize.BelongsToManyGetAssociationsMixin<MUser>;
-    setIdUserMUserRUserRoles!: Sequelize.BelongsToManySetAssociationsMixin<MUser, MUserId>;
-    addIdUserMUserRUserRole!: Sequelize.BelongsToManyAddAssociationMixin<MUser, MUserId>;
-    addIdUserMUserRUserRoles!: Sequelize.BelongsToManyAddAssociationsMixin<MUser, MUserId>;
-    createIdUserMUserRUserRole!: Sequelize.BelongsToManyCreateAssociationMixin<MUser>;
-    removeIdUserMUserRUserRole!: Sequelize.BelongsToManyRemoveAssociationMixin<MUser, MUserId>;
-    removeIdUserMUserRUserRoles!: Sequelize.BelongsToManyRemoveAssociationsMixin<MUser, MUserId>;
-    hasIdUserMUserRUserRole!: Sequelize.BelongsToManyHasAssociationMixin<MUser, MUserId>;
-    hasIdUserMUserRUserRoles!: Sequelize.BelongsToManyHasAssociationsMixin<MUser, MUserId>;
-    countIdUserMUserRUserRoles!: Sequelize.BelongsToManyCountAssociationsMixin;
-    // MRole hasMany RUserRole via idRole
-    rUserRoles!: RUserRole[];
-    getRUserRoles!: Sequelize.HasManyGetAssociationsMixin<RUserRole>;
-    setRUserRoles!: Sequelize.HasManySetAssociationsMixin<RUserRole, RUserRoleId>;
-    addRUserRole!: Sequelize.HasManyAddAssociationMixin<RUserRole, RUserRoleId>;
-    addRUserRoles!: Sequelize.HasManyAddAssociationsMixin<RUserRole, RUserRoleId>;
-    createRUserRole!: Sequelize.HasManyCreateAssociationMixin<RUserRole>;
-    removeRUserRole!: Sequelize.HasManyRemoveAssociationMixin<RUserRole, RUserRoleId>;
-    removeRUserRoles!: Sequelize.HasManyRemoveAssociationsMixin<RUserRole, RUserRoleId>;
-    hasRUserRole!: Sequelize.HasManyHasAssociationMixin<RUserRole, RUserRoleId>;
-    hasRUserRoles!: Sequelize.HasManyHasAssociationsMixin<RUserRole, RUserRoleId>;
-    countRUserRoles!: Sequelize.HasManyCountAssociationsMixin;
+    // MRole hasMany MUser via idRole
+    mUsers!: MUser[];
+    getMUsers!: Sequelize.HasManyGetAssociationsMixin<MUser>;
+    setMUsers!: Sequelize.HasManySetAssociationsMixin<MUser, MUserId>;
+    addMUser!: Sequelize.HasManyAddAssociationMixin<MUser, MUserId>;
+    addMUsers!: Sequelize.HasManyAddAssociationsMixin<MUser, MUserId>;
+    createMUser!: Sequelize.HasManyCreateAssociationMixin<MUser>;
+    removeMUser!: Sequelize.HasManyRemoveAssociationMixin<MUser, MUserId>;
+    removeMUsers!: Sequelize.HasManyRemoveAssociationsMixin<MUser, MUserId>;
+    hasMUser!: Sequelize.HasManyHasAssociationMixin<MUser, MUserId>;
+    hasMUsers!: Sequelize.HasManyHasAssociationsMixin<MUser, MUserId>;
+    countMUsers!: Sequelize.HasManyCountAssociationsMixin;
 
     static initModel(sequelize: Sequelize.Sequelize): typeof MRole {
         return sequelize.define('MRole', {

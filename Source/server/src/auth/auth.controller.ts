@@ -44,6 +44,7 @@ export default class AuthController {
         try {
             const USERNAME: string = req.body.username;
             const PASSWORD_RAW: string = req.body.password;
+            const IS_GOOGLE: boolean = req.body.isGoogle;
 
             const user = await AuthService.getUserByUsername(USERNAME);
             if (Util.isNullOrUndefined(user)) {
@@ -51,10 +52,12 @@ export default class AuthController {
                 return;
             }
 
-            const IS_VALID_PASSWORD = AuthService.isValidPassword(PASSWORD_RAW, user!);
-            if (!IS_VALID_PASSWORD) {
-                res.status(401).json({message: "Password does not match"});
-                return;
+            if (!IS_GOOGLE) {
+                const IS_VALID_PASSWORD = AuthService.isValidPassword(PASSWORD_RAW, user!);
+                if (!IS_VALID_PASSWORD) {
+                    res.status(401).json({message: "Password does not match"});
+                    return;
+                }
             }
 
             const DATA_FOR_ACCESS_TOKEN = {
@@ -75,7 +78,7 @@ export default class AuthController {
                 access_token: ACCESS_TOKEN,
             }
             let refreshToken = await AuthService.generateToken(DATA_FOR_REFRESH_TOKEN, process.env.SECRET_KEY!, process.env.REFRESH_TOKEN_LIFE!);
-            if (Util.isNullOrUndefined(user?.refreshToken) || user?.expiredDate!?.getTime() < new Date().getTime()) {
+            if (Util.isNullOrUndefined(user?.refreshToken) || user?.expiredRefreshToken!?.getTime() < new Date().getTime()) {
                 await AuthService.updateRefreshTokenAndExpiredDateById(user?.id!, refreshToken);
             }
             else {
@@ -84,7 +87,7 @@ export default class AuthController {
 
             res.cookie('accessToken', ACCESS_TOKEN);
             res.cookie('refreshToken', refreshToken);
-            res.status(200).json({
+            return res.status(200).json({
                 message: "Login OK",
                 user: {
                     username: user?.username,
@@ -92,12 +95,10 @@ export default class AuthController {
                     fullname: user?.fullname,
                 }
             });
-            return;
         } catch (error) {
             console.log(error);
             res.status(500).send({message: "Internal Server Error."});
         }
-        
     }
 
     async logout(req: Request, res: Response) {
@@ -116,7 +117,6 @@ export default class AuthController {
 
     async refresh(req: Request, res: Response) {
         try {
-            console.log(req.body)
             const DATA_FOR_ACCESS_TOKEN = {
                 user_id: req.body.payload.user_id,
                 username: req.body.payload.username,

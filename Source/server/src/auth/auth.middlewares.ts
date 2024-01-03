@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import StringUtil from "~/utils/StringUtils";
-import Util from "~/utils/Util";
 import AuthService from "./auth.service";
-import { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 
 export default class AuthMiddlewares {
     async isAuth(req: Request, res: Response, next: NextFunction) {

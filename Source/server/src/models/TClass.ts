@@ -1,12 +1,15 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { MUser, MUserId } from './MUser';
+import type { RClassStudentGrade, RClassStudentGradeId } from './RClassStudentGrade';
 import type { RClassUser, RClassUserId } from './RClassUser';
+import type { TGradeComposition, TGradeCompositionId } from './TGradeComposition';
 
 export interface TClassAttributes {
     id: number;
     className: string;
-    description: string;
+    classDescription: string;
+    gradeScale: number;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -22,7 +25,8 @@ export type TClassCreationAttributes = Optional<TClassAttributes, TClassOptional
 export class TClass extends Model<TClassAttributes, TClassCreationAttributes> implements TClassAttributes {
     id!: number;
     className!: string;
-    description!: string;
+    classDescription!: string;
+    gradeScale!: number;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -51,6 +55,18 @@ export class TClass extends Model<TClassAttributes, TClassCreationAttributes> im
     hasIdUserMUser!: Sequelize.BelongsToManyHasAssociationMixin<MUser, MUserId>;
     hasIdUserMUsers!: Sequelize.BelongsToManyHasAssociationsMixin<MUser, MUserId>;
     countIdUserMUsers!: Sequelize.BelongsToManyCountAssociationsMixin;
+    // TClass hasMany RClassStudentGrade via idClass
+    rClassStudentGrades!: RClassStudentGrade[];
+    getRClassStudentGrades!: Sequelize.HasManyGetAssociationsMixin<RClassStudentGrade>;
+    setRClassStudentGrades!: Sequelize.HasManySetAssociationsMixin<RClassStudentGrade, RClassStudentGradeId>;
+    addRClassStudentGrade!: Sequelize.HasManyAddAssociationMixin<RClassStudentGrade, RClassStudentGradeId>;
+    addRClassStudentGrades!: Sequelize.HasManyAddAssociationsMixin<RClassStudentGrade, RClassStudentGradeId>;
+    createRClassStudentGrade!: Sequelize.HasManyCreateAssociationMixin<RClassStudentGrade>;
+    removeRClassStudentGrade!: Sequelize.HasManyRemoveAssociationMixin<RClassStudentGrade, RClassStudentGradeId>;
+    removeRClassStudentGrades!: Sequelize.HasManyRemoveAssociationsMixin<RClassStudentGrade, RClassStudentGradeId>;
+    hasRClassStudentGrade!: Sequelize.HasManyHasAssociationMixin<RClassStudentGrade, RClassStudentGradeId>;
+    hasRClassStudentGrades!: Sequelize.HasManyHasAssociationsMixin<RClassStudentGrade, RClassStudentGradeId>;
+    countRClassStudentGrades!: Sequelize.HasManyCountAssociationsMixin;
     // TClass hasMany RClassUser via idClass
     rClassUsers!: RClassUser[];
     getRClassUsers!: Sequelize.HasManyGetAssociationsMixin<RClassUser>;
@@ -63,6 +79,18 @@ export class TClass extends Model<TClassAttributes, TClassCreationAttributes> im
     hasRClassUser!: Sequelize.HasManyHasAssociationMixin<RClassUser, RClassUserId>;
     hasRClassUsers!: Sequelize.HasManyHasAssociationsMixin<RClassUser, RClassUserId>;
     countRClassUsers!: Sequelize.HasManyCountAssociationsMixin;
+    // TClass hasMany TGradeComposition via idClass
+    tGradeCompositions!: TGradeComposition[];
+    getTGradeCompositions!: Sequelize.HasManyGetAssociationsMixin<TGradeComposition>;
+    setTGradeCompositions!: Sequelize.HasManySetAssociationsMixin<TGradeComposition, TGradeCompositionId>;
+    addTGradeComposition!: Sequelize.HasManyAddAssociationMixin<TGradeComposition, TGradeCompositionId>;
+    addTGradeCompositions!: Sequelize.HasManyAddAssociationsMixin<TGradeComposition, TGradeCompositionId>;
+    createTGradeComposition!: Sequelize.HasManyCreateAssociationMixin<TGradeComposition>;
+    removeTGradeComposition!: Sequelize.HasManyRemoveAssociationMixin<TGradeComposition, TGradeCompositionId>;
+    removeTGradeCompositions!: Sequelize.HasManyRemoveAssociationsMixin<TGradeComposition, TGradeCompositionId>;
+    hasTGradeComposition!: Sequelize.HasManyHasAssociationMixin<TGradeComposition, TGradeCompositionId>;
+    hasTGradeCompositions!: Sequelize.HasManyHasAssociationsMixin<TGradeComposition, TGradeCompositionId>;
+    countTGradeCompositions!: Sequelize.HasManyCountAssociationsMixin;
 
     static initModel(sequelize: Sequelize.Sequelize): typeof TClass {
         return sequelize.define('TClass', {
@@ -77,9 +105,15 @@ export class TClass extends Model<TClassAttributes, TClassCreationAttributes> im
             allowNull: false,
             field: 'class_name'
         },
-        description: {
+        classDescription: {
             type: DataTypes.STRING(255),
-            allowNull: false
+            allowNull: false,
+            field: 'class_description'
+        },
+        gradeScale: {
+            type: DataTypes.DECIMAL,
+            allowNull: false,
+            field: 'grade_scale'
         },
         recordVersion: {
             type: DataTypes.INTEGER,

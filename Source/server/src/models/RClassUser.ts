@@ -6,15 +6,18 @@ import type { TClass, TClassId } from './TClass';
 export interface RClassUserAttributes {
     idClass: number;
     idUser: number;
+    isOwner?: boolean;
 }
 
 export type RClassUserPk = "idClass" | "idUser";
 export type RClassUserId = RClassUser[RClassUserPk];
-export type RClassUserCreationAttributes = RClassUserAttributes;
+export type RClassUserOptionalAttributes = "isOwner";
+export type RClassUserCreationAttributes = Optional<RClassUserAttributes, RClassUserOptionalAttributes>;
 
 export class RClassUser extends Model<RClassUserAttributes, RClassUserCreationAttributes> implements RClassUserAttributes {
     idClass!: number;
     idUser!: number;
+    isOwner?: boolean;
 
     // RClassUser belongsTo MUser via idUser
     idUserMUser!: MUser;
@@ -48,6 +51,12 @@ export class RClassUser extends Model<RClassUserAttributes, RClassUserCreationAt
                 key: 'id'
             },
             field: 'id_user'
+        },
+        isOwner: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_owner'
         }
     }, {
         tableName: 'r_class_user',

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SignInImage from './img/SignInImage';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { LoginInput, loginSchema } from '../../models/Login';
@@ -11,9 +11,14 @@ import { useMutation } from '@tanstack/react-query';
 import { useStateContext } from '../../context';
 import { loginUserFn } from '../../services/authApi';
 import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const params = new URLSearchParams(location.search);
+  const redirectAccount = params.get('redirectAccount');
 
   const {
     control,
@@ -45,7 +50,20 @@ const SignIn = () => {
     },
   });
 
-  const onSubmitHandler: SubmitHandler<LoginInput> = values => {
+  useEffect(() => {
+    if (null !== redirectAccount) {
+      const loginInput: LoginInput = {
+        username: redirectAccount,
+        password: "",
+        isGoogle: true,
+      }
+      loginUser(loginInput);
+    }
+  }, [redirectAccount]);
+  
+
+  const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
+    // // 👇 Executing the loginUser Mutation
     loginUser(values);
   };
 
@@ -71,7 +89,7 @@ const SignIn = () => {
                   control={control}
                   name="username"
                   errors={errors}
-                  label="User name"
+                  label="Username"
                   icon={<FaRegUser />}
                 />
 
