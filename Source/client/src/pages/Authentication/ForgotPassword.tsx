@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import TextField from '../../components/form/TextField';
 import { useStateContext } from '../../context';
 import { ForgotPasswordInput, forgotPasswordSchema } from '../../models/ForgotPassword';
-import { LoginInput, loginSchema } from '../../models/Login';
 import { forgotPasswordFn } from '../../services/authApi';
 import SubmitButton from '../UiElements/SubmitButton';
 
@@ -55,8 +54,8 @@ const ForgotPassword = () => {
   return (
     <>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="flex flex-wrap items-center">
-          <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
+        <div className="flex flex-wrap items-center justify-center min-h-screen">
+          <div className="border-stroke dark:border-strokedark xl:w-1/2 border-2 rounded-md">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                 Forgot Password
