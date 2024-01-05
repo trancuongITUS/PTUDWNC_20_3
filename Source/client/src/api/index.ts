@@ -1,4 +1,4 @@
-import { ILoginResponse } from './../services/types';
+import { IGenericResponse } from './../services/types';
 import axios from 'axios';
 
 const BASE_URL = 'http://127.0.0.1:8080/';
@@ -12,7 +12,7 @@ export const api = axios.create({
 });
 
 export const refreshAccessTokenFn = async () => {
-  const response = await api.post<ILoginResponse>('auth/refresh');
+  const response = await api.post<IGenericResponse>('auth/refresh');
   return response.data;
 };
 

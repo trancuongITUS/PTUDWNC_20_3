@@ -3,7 +3,7 @@ import SignInImage from './img/SignInImage';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { LoginInput, loginSchema } from '../../models/Login';
 import { zodResolver } from '@hookform/resolvers/zod';
-import TextField from '../../components/form/TextField';
+import TextFieldIcon from '../../components/form/TextFieldIcon';
 import { FaRegUser } from 'react-icons/fa';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import SubmitButton from '../UiElements/SubmitButton';
@@ -67,7 +67,7 @@ const SignIn = () => {
               </h2>
 
               <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="username"
                   errors={errors}
@@ -75,7 +75,7 @@ const SignIn = () => {
                   icon={<FaRegUser />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="password"
                   errors={errors}

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import SignUpImage from './img/SignUpImage';
-import TextField from '../../components/form/TextField';
+import TextFieldIcon from '../../components/form/TextFieldIcon';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { RegisterInput, registerSchema } from '../../models/Register';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -83,7 +83,7 @@ const SignUp = () => {
                 </div>
                 <br />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="username"
                   errors={errors}
@@ -91,7 +91,7 @@ const SignUp = () => {
                   icon={<FaRegUser />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="fullname"
                   errors={errors}
@@ -99,7 +99,7 @@ const SignUp = () => {
                   icon={<MdDriveFileRenameOutline />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="email"
                   errors={errors}
@@ -107,7 +107,7 @@ const SignUp = () => {
                   icon={<MdOutlineEmail />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="password"
                   errors={errors}
@@ -116,7 +116,7 @@ const SignUp = () => {
                   icon={<RiLockPasswordLine />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="passwordConfirm"
                   errors={errors}

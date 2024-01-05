@@ -4,7 +4,7 @@ import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { MdOutlineEmail } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import TextField from '../../components/form/TextField';
+import TextFieldIcon from '../../components/form/TextFieldIcon';
 import { useStateContext } from '../../context';
 import { ForgotPasswordInput, forgotPasswordSchema } from '../../models/ForgotPassword';
 import { forgotPasswordFn } from '../../services/authApi';
@@ -62,7 +62,7 @@ const ForgotPassword = () => {
               </h2>
 
               <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="email"
                   errors={errors}
