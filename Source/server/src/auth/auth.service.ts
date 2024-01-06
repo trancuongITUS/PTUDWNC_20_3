@@ -13,6 +13,10 @@ export default class AuthService {
         return await MUserDao.findByUsername(username); 
     }
 
+    public static async getUserByEmail(email: string): Promise<MUser | null> {
+        return await MUserDao.findByEmail(email);
+    }
+
     public static async isDuplicateUsername(username: string): Promise<boolean> {
 
         let result: boolean = true;
@@ -62,7 +66,7 @@ export default class AuthService {
         return await MUserDao.logout(username);
     }
 
-    public static async register(username: string, password: string, email: string, fullname: string): Promise<boolean> {
+    public static async register(username: string, password: string, email: string, fullname: string, codeVerifyEmail: string): Promise<boolean> {
         let isSuccess: boolean = false;
 
         try {
@@ -72,6 +76,7 @@ export default class AuthService {
                 pwdHash: PASSWORD_HASH,
                 email: email,
                 fullname: fullname,
+                codeVerifyEmail: codeVerifyEmail,
                 createdDate: new Date(),
                 createdUser: 1,
                 lastUpdDate: new Date(),
@@ -81,11 +86,9 @@ export default class AuthService {
             await MUserDao.create(NEW_USER);
             isSuccess = true;
         } catch (error) {
-
             console.log(error);
             isSuccess = false;
         } finally {
-
             return isSuccess;
         }
     }
@@ -107,5 +110,19 @@ export default class AuthService {
 
     public static async verifyToken(accessToken: string, secretKey: string): Promise<JwtPayload | string> {
         return await verify(accessToken, secretKey);
+    }
+
+    public static async verifyEmail(userId: number): Promise<boolean> {
+        let isSuccess: boolean = false;
+
+        try {
+            await MUserDao.verifyEmail(userId);
+            isSuccess = true;
+        } catch (error) {
+            console.log(error);
+            isSuccess = false;
+        } finally {
+            return isSuccess;
+        }
     }
 }

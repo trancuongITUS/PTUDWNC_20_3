@@ -15,6 +15,8 @@ export interface MUserAttributes {
     refreshToken?: string | null;
     expiredRefreshToken?: Date | null;
     isGoogle?: boolean;
+    isVerifiedEmail?: boolean;
+    codeVerifyEmail?: string;
     idRole?: number;
     recordVersion?: number;
     createdDate?: Date;
@@ -25,7 +27,7 @@ export interface MUserAttributes {
 
 export type MUserPk = "id";
 export type MUserId = MUser[MUserPk];
-export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "refreshToken" | "expiredRefreshToken" | "isGoogle" | "idRole" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
+export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "refreshToken" | "expiredRefreshToken" | "isGoogle" | "isVerifiedEmail" | "codeVerifyEmail" | "idRole" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
 export type MUserCreationAttributes = Optional<MUserAttributes, MUserOptionalAttributes>;
 
 export class MUser extends Model<MUserAttributes, MUserCreationAttributes> implements MUserAttributes {
@@ -37,6 +39,8 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
     refreshToken?: string | null;
     expiredRefreshToken?: Date | null;
     isGoogle?: boolean;
+    isVerifiedEmail?: boolean;
+    codeVerifyEmail?: string;
     idRole?: number;
     recordVersion?: number;
     createdDate?: Date;
@@ -172,7 +176,7 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             allowNull: true
         },
         refreshToken: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.TEXT,
             allowNull: true,
             field: 'refresh_token'
         },
@@ -186,6 +190,17 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             allowNull: true,
             defaultValue: false,
             field: 'is_google'
+        },
+        isVerifiedEmail: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_verified_email'
+        },
+        codeVerifyEmail: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            field: 'code_verify_email'
         },
         idRole: {
             type: DataTypes.INTEGER,

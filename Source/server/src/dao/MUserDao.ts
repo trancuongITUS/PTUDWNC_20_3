@@ -80,5 +80,15 @@ export default class MUserDao {
     public static async findById(id: number): Promise<MUser | null> {
         return await this.getDao().findByPk(id);
     }
+
+    public static async verifyEmail(id: number): Promise<void> {
+        await this.getDao().update(
+            {isVerifiedEmail: true}, {
+                where: {
+                    id: id,
+                }
+            }
+        )
+    }
 }
 

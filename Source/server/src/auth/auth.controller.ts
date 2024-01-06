@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Util from "~/utils/Util";
 import AuthService from "./auth.service";
+import transporter from "~/mail/nodemailer.config";
 
 export default class AuthController {
     async register(req: Request, res: Response) {
@@ -24,16 +25,40 @@ export default class AuthController {
                 return;
             }
 
-            const IS_REGISTER_SUCCESS: boolean = await AuthService.register(USERNAME, PASSWORD_RAW, EMAIL, FULLNAME);
+            const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let codeVerifyEmail = '';
+            for (let i = 0; i < CHARACTERS.length; i++) {
+                const randomIndex = Math.floor(Math.random() * CHARACTERS.length);
+                codeVerifyEmail += CHARACTERS.charAt(randomIndex);
+            }
+            codeVerifyEmail += '-';
+            codeVerifyEmail += EMAIL;
+
+            const IS_REGISTER_SUCCESS: boolean = await AuthService.register(USERNAME, PASSWORD_RAW, EMAIL, FULLNAME, codeVerifyEmail);
             if (!IS_REGISTER_SUCCESS) {
                 res.status(500).send({message: "Internal Server Error."});
                 return;
             }
 
-            res.status(201).json({
-                message: "Register OK",
+            const LINK = `http://localhost:8080/auth/verify-email/${codeVerifyEmail}`;
+            const MAIL_OPTIONS = {
+                from: '',
+                to: EMAIL,
+                subject: 'Verify your email address',
+                text: `Click the following link to verify your email: ${LINK}`
+            };
+            transporter.sendMail(MAIL_OPTIONS, (error: any, info: any) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(409).send({message: "Can not send email to verify your account."});
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
             });
-            return;
+
+            return res.status(201).json({
+                message: "An email has been sent to your inbox, please verify your account using the attached link.",
+            });
         } catch (error) {
             console.log(error);
             res.status(500).send({message: "Internal Server Error."});
@@ -151,5 +176,17 @@ export default class AuthController {
             console.log(error);
             res.status(500).send({message: "Internal Server Error."});
         }
+    }
+
+    async verifyEmail(req: Request, res: Response) {
+        const CODE_VERIFY_EMAIL = req.params.codeVerifyEmail;
+        const EMAIL = CODE_VERIFY_EMAIL.split('-')[1];
+
+        const user = await AuthService.getUserByEmail(EMAIL);
+        if (EMAIL === user?.email) {
+            await AuthService.verifyEmail(user?.id!);
+            res.redirect('http://127.0.0.1:5173/');
+        }
+
     }
 }

@@ -87,7 +87,7 @@ const SignUp = () => {
                   control={control}
                   name="username"
                   errors={errors}
-                  label="User name"
+                  label="Username"
                   icon={<FaRegUser />}
                 />
 

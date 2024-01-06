@@ -13,9 +13,11 @@ CREATE TABLE IF NOT EXISTS m_user(
     , pwd_hash character varying (255)
     , email character varying (255) UNIQUE NOT NULL
     , fullname character varying (255)
-    , refresh_token character varying (255)
+    , refresh_token text
     , expired_refresh_token timestamp without time zone
     , is_google boolean default false
+    , is_verified_email boolean default false
+    , code_verify_email character varying (255)
     , id_role integer
     , record_version integer DEFAULT 0
     , created_date timestamp without time zone

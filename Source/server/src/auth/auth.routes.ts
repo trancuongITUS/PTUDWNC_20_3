@@ -19,7 +19,6 @@ class AuthRoutes {
         this.router.post('/refresh', this.authMiddleware.verifyRefreshToken, this.authController.refresh);
 
         this.router.get('/google', passportConfig.authenticate('google', { scope: ['profile', 'email'] }));
-        // this.router.get('/google/callback', passportConfig.authenticate('google'));
         this.router.get('/google/callback', (req: Request, res: Response, next: NextFunction) => {
             passportConfig.authenticate('google', (err: any, user: any, info: any) => {
                 if (err) {
@@ -37,6 +36,8 @@ class AuthRoutes {
                 });
             })(req, res, next);
         });
+
+        this.router.get('/verify-email/:codeVerifyEmail', this.authController.verifyEmail);
     }
 }
 

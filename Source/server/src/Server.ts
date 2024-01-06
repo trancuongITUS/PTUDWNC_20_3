@@ -1,8 +1,7 @@
-import cors, { CorsOptions } from "cors";
+import cors from "cors";
 import express, { Application } from "express";
 import authRoutes from "./auth/auth.routes";
 import DBConnector from "./db/DBConnector";
-import { initModels } from "./models/init-models";
 import userRoutes from "./routes/user.routes";
 import classRoutes from "./routes/class.routes";
 import cookieParser from "cookie-parser";
