@@ -11,17 +11,8 @@ export interface IUser {
   __v?: number;
 }
 
-export interface GenericResponse {
+export interface IGenericResponse {
+  message?: string;
   status?: string;
-  message?: string;
-}
-
-export interface ILoginResponse {
-  message?: string;
-  user: IUser;
-}
-
-export interface IUserResponse {
-  message: string;
-  result: IUser;
+  user?: IUser;
 }

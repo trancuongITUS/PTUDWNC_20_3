@@ -1,8 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import SignUpImage from './img/SignUpImage';
-import TextField from '../../components/form/TextField';
+import TextFieldIcon from '../../components/form/TextFieldIcon';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
-import { RegisterInput, registerSchema } from '../../models/register';
+import { RegisterInput, registerSchema } from '../../models/Register';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { signUpUserFn } from '../../services/authApi';
@@ -12,6 +12,7 @@ import { FaRegUser } from 'react-icons/fa';
 import { MdDriveFileRenameOutline, MdOutlineEmail } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import { TbPasswordFingerprint } from 'react-icons/tb';
+import WrapperRadio from '../../components/form/WrapperRadio';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -43,31 +44,46 @@ const SignUp = () => {
     },
   });
 
-  const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
-    // 👇 Execute the Mutation
+  const onSubmitHandler: SubmitHandler<RegisterInput> = values => {
     mutate(values);
   };
 
-  const onErrorHandler: SubmitErrorHandler<RegisterInput> = (values) => {
-    // 👇 Executing the loginUser Mutation
+  const onErrorHandler: SubmitErrorHandler<RegisterInput> = values => {
     console.log(values);
   };
 
   return (
     <>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="flex flex-wrap items-center">
+        <div className="flex flex-wrap items-center min-h-100">
           <SignUpImage />
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              <span className="mb-1.5 block font-medium">Start for free</span>
-              <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
+              <span className="mb-1.5 block font-medium">Let's join us</span>
+              <h2 className="mb-1 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                 Sign Up to HCMUS
               </h2>
 
               <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
-                <TextField
+                <div className="flex justify-center">
+                  <div className="flex-1">
+                    <WrapperRadio
+                      control={control}
+                      name="role"
+                      errors={errors}
+                      classes={'flex justify-center'}
+                      defaultValue="Student"
+                      options={[
+                        { value: 'Student', label: 'Student' },
+                        { value: 'Teacher', label: 'Teacher' },
+                      ]}
+                    />
+                  </div>
+                </div>
+                <br />
+
+                <TextFieldIcon
                   control={control}
                   name="username"
                   errors={errors}
@@ -75,7 +91,7 @@ const SignUp = () => {
                   icon={<FaRegUser />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="fullname"
                   errors={errors}
@@ -83,7 +99,7 @@ const SignUp = () => {
                   icon={<MdDriveFileRenameOutline />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="email"
                   errors={errors}
@@ -91,7 +107,7 @@ const SignUp = () => {
                   icon={<MdOutlineEmail />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="password"
                   errors={errors}
@@ -100,7 +116,7 @@ const SignUp = () => {
                   icon={<RiLockPasswordLine />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="passwordConfirm"
                   errors={errors}

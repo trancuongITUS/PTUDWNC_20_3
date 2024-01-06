@@ -1,29 +1,16 @@
-import { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 
-import Loader from './common/Loader';
 import { useRoutes } from 'react-router-dom';
-import routes from './routes';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import routes from './routes';
 
 function App() {
   const content = useRoutes(routes);
-  const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
-
-  return loading ? (
-    <Loader />
-  ) : (
+  return (
     <>
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-        containerClassName="overflow-auto"
-      />
+      <Toaster position="top-right" reverseOrder={false} containerClassName="overflow-auto" />
       <ToastContainer />
       {content}
     </>

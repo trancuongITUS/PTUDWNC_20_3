@@ -1,9 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
 import SignInImage from './img/SignInImage';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
-import { LoginInput, loginSchema } from '../../models/login';
+import { LoginInput, loginSchema } from '../../models/Login';
 import { zodResolver } from '@hookform/resolvers/zod';
-import TextField from '../../components/form/TextField';
+import TextFieldIcon from '../../components/form/TextFieldIcon';
 import { FaRegUser } from 'react-icons/fa';
 import { RiLockPasswordLine } from 'react-icons/ri';
 import SubmitButton from '../UiElements/SubmitButton';
@@ -28,7 +28,7 @@ const SignIn = () => {
   //  API Login Mutation
   const { mutate: loginUser, isPending } = useMutation({
     mutationFn: (userData: LoginInput) => loginUserFn(userData),
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success('You successfully logged in', {
         hideProgressBar: true,
         autoClose: 1000,
@@ -45,31 +45,29 @@ const SignIn = () => {
     },
   });
 
-  const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
-    // 👇 Executing the loginUser Mutation
+  const onSubmitHandler: SubmitHandler<LoginInput> = values => {
     loginUser(values);
   };
 
-  const onErrorHandler: SubmitErrorHandler<LoginInput> = (values) => {
-    // 👇 Executing the loginUser Mutation
+  const onErrorHandler: SubmitErrorHandler<LoginInput> = values => {
     console.log(values);
   };
 
   return (
     <>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="flex flex-wrap items-center">
+        <div className="flex flex-wrap items-center min-h-screen">
           <SignInImage />
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              <span className="mb-1.5 block font-medium">Start for free</span>
+              <span className="mb-1.5 block font-medium">Let's Start</span>
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                 Sign In to HCMUS
               </h2>
 
               <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="username"
                   errors={errors}
@@ -77,7 +75,7 @@ const SignIn = () => {
                   icon={<FaRegUser />}
                 />
 
-                <TextField
+                <TextFieldIcon
                   control={control}
                   name="password"
                   errors={errors}
@@ -124,6 +122,12 @@ const SignIn = () => {
                   </span>
                   Sign in with Google
                 </button>
+
+                <div className="mt-6 text-center">
+                  <Link to="/forgot-password" className="text-primary">
+                    Forgot your password?
+                  </Link>
+                </div>
 
                 <div className="mt-6 text-center">
                   <p>
