@@ -6,12 +6,12 @@ import Breadcrumb from '../components/Breadcrumb';
 import TextField from '../components/form/TextField';
 import { ChangePasswordInput, changePasswordSchema } from '../models/ChangePassword';
 import { changePasswordFn } from '../services/authApi';
-import SubmitButton from './UiElements/SubmitButton';
+import SubmitButton from '../components/form/SubmitButton';
 import { useNavigate } from 'react-router-dom';
 
 const ChangePassword = () => {
   const navigate = useNavigate();
-  
+
   const {
     control,
     formState: { errors },

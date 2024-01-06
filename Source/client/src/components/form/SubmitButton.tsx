@@ -5,7 +5,7 @@ interface ISubmitButton {
 
 const SubmitButton = ({ label, isPending }: ISubmitButton) => {
   return (
-    <div className="mb-5">
+    <div>
       <input
         type="submit"
         value={isPending === true ? '...' : label || 'Submit'}

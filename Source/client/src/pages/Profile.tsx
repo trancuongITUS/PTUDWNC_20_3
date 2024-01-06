@@ -1,39 +1,75 @@
-import { useEffect, useState } from 'react';
-import Breadcrumb from '../components/Breadcrumb';
-import fireToast from '../hooks/fireToast';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { IoPersonOutline } from 'react-icons/io5';
+import { toast } from 'react-toastify';
+import api from '../api';
+import Breadcrumb from '../components/Breadcrumb';
+import Button from '../components/form/Button';
+import Error from '../components/form/Error';
+import { useStateContext } from '../context';
+import { UpdateUserInput, updateUserSchema } from '../models/UpdateUser';
+import { updateUserFn } from '../services/authApi';
+import { IUserResponse } from '../services/types';
 
 const Profile = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [rows, setRows] = useState(
-    localStorage.getItem('alertSettings') ? JSON.parse(localStorage.getItem('alertSettings')) : []
-  );
-  useEffect(() => {
-    // storing input name
-    localStorage.setItem('alertSettings', JSON.stringify(rows));
-  }, [rows]);
-  const [rowToEdit, setRowToEdit] = useState(null);
+  const stateContext = useStateContext();
+  const user = stateContext.state.authUser;
 
-  const handleDeleteRow = targetIndex => {
-    setRows(rows.filter((_, idx) => idx !== targetIndex));
+  const getMeFn = async () => {
+    const response = await api.get<IUserResponse>('users/me');
+    stateContext.dispatch({ type: 'SET_USER', payload: response.data.result });
+    return response.data.result;
   };
 
-  const handleEditRow = idx => {
-    setRowToEdit(idx);
+  // API Get Current Logged-in user
+  const { refetch } = useQuery({
+    queryFn: getMeFn,
+    queryKey: ['authUser'],
+    enabled: false,
+    retry: 1,
+  });
 
-    setModalOpen(true);
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm<UpdateUserInput>({
+    resolver: zodResolver(updateUserSchema),
+    defaultValues: { fullname: user?.fullname, email: user?.email },
+  });
+
+  // 👇 Calling the Register Mutation
+  const { mutate, isPending } = useMutation({
+    mutationFn: (userData: UpdateUserInput) => updateUserFn(userData),
+    onSuccess(data) {
+      refetch();
+      toast.success(data?.message, {
+        hideProgressBar: true,
+        autoClose: 1000,
+      });
+    },
+    onError(error: any) {
+      toast.error((error as any).response.data.message, {
+        position: 'top-right',
+        hideProgressBar: true,
+        autoClose: 1000,
+      });
+    },
+  });
+
+  const onSubmitHandler: SubmitHandler<UpdateUserInput> = values => {
+    // 👇 Execute the Mutation
+    mutate(values);
   };
 
-  const handleSubmit = newRow => {
-    rowToEdit === null
-      ? setRows([...rows, newRow])
-      : setRows(
-          rows.map((currRow, idx) => {
-            if (idx !== rowToEdit) return currRow;
+  const onErrorHandler: SubmitErrorHandler<UpdateUserInput> = values => {
+    console.log(values);
+  };
 
-            return newRow;
-          })
-        );
+  const handleReset = () => {
+    reset();
   };
 
   return (
@@ -44,19 +80,17 @@ const Profile = () => {
         <div className="grid grid-cols-5 gap-8">
           <div className="col-span-5 xl:col-span-5">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-              <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">Personal Information</h3>
-              </div>
               <div className="p-7">
-                <form action="#">
+                <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                    <div className="w-full sm:w-1/2">
-                      <label
+                    <div className="w-full ">
+                      {/* <label
                         className="mb-3 block text-sm font-medium text-black dark:text-white"
                         htmlFor="fullName"
                       >
                         Full Name
-                      </label>
+                      </label> */}
+                      <label className="mb-2.5 block text-black dark:text-white">Full Name</label>
                       <div className="relative">
                         <span className="absolute left-3 top-3">
                           <IoPersonOutline className={'size-6'} />
@@ -64,15 +98,14 @@ const Profile = () => {
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
-                          name="fullName"
                           id="fullName"
-                          placeholder="Devid Jhon"
-                          defaultValue="Devid Jhon"
+                          {...register('fullname')}
                         />
+                        <Error name={'fullname'} errors={errors} />
                       </div>
                     </div>
 
-                    <div className="w-full sm:w-1/2">
+                    {/* <div className="w-full sm:w-1/2">
                       <label
                         className="mb-3 block text-sm font-medium text-black dark:text-white"
                         htmlFor="phoneNumber"
@@ -87,16 +120,17 @@ const Profile = () => {
                         placeholder="+990 3343 7865"
                         defaultValue="+990 3343 7865"
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="mb-5.5">
-                    <label
+                    {/* <label
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
                       htmlFor="emailAddress"
                     >
                       Email Address
-                    </label>
+                    </label> */}
+                    <label className="mb-2.5 block text-black dark:text-white">Email Address</label>
                     <div className="relative">
                       <span className="absolute left-4.5 top-4">
                         <svg
@@ -125,16 +159,14 @@ const Profile = () => {
                       </span>
                       <input
                         className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                        type="email"
-                        name="emailAddress"
                         id="emailAddress"
-                        placeholder="devidjond45@gmail.com"
-                        defaultValue="devidjond45@gmail.com"
+                        {...register('email')}
                       />
+                      <Error name={'email'} errors={errors} />
                     </div>
                   </div>
 
-                  <div className="mb-5.5">
+                  {/* <div className="mb-5.5">
                     <label
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
                       htmlFor="Username"
@@ -149,9 +181,9 @@ const Profile = () => {
                       placeholder="devidjhon24"
                       defaultValue="devidjhon24"
                     />
-                  </div>
+                  </div> */}
 
-                  <div className="mb-5.5">
+                  {/* <div className="mb-5.5">
                     <label
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
                       htmlFor="Username"
@@ -199,22 +231,17 @@ const Profile = () => {
                         defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere fermentum urna, eu condimentum mauris tempus ut. Donec fermentum blandit aliquet."
                       ></textarea>
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className="flex justify-end gap-4.5">
-                    <button
-                      className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                      type="submit"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:shadow-1"
-                      type="submit"
-                      onClick={fireToast}
-                    >
-                      Save
-                    </button>
+                    <Button
+                      label="Reset"
+                      isPending={isPending}
+                      transparent
+                      onClick={handleReset}
+                      disable={!isDirty}
+                    />
+                    <Button submit label="Save" isPending={isPending} disable={!isDirty} />
                   </div>
                 </form>
               </div>
