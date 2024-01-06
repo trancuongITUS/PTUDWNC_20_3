@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import TextFieldIcon from '../../components/form/TextFieldIcon';
 import { ForgotPasswordInput, forgotPasswordSchema } from '../../models/ForgotPassword';
 import { forgotPasswordFn } from '../../services/authApi';
-import SubmitButton from '../UiElements/SubmitButton';
+import SubmitButton from '../../components/form/SubmitButton';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();

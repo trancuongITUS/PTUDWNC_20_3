@@ -1,9 +1,10 @@
 import { LoginInput } from '../models/Login';
 import { RegisterInput } from '../models/Register';
-import { IGenericResponse, IUser } from './types';
+import { IGenericResponse } from './types';
 import api from '../api';
 import { ForgotPasswordInput } from '../models/ForgotPassword';
 import { ChangePasswordInput } from '../models/ChangePassword';
+import { UpdateUserInput } from '../models/UpdateUser';
 
 export const signUpUserFn = async (user: RegisterInput) => {
   const response = await api.post<IGenericResponse>('auth/register', user);
@@ -20,7 +21,7 @@ export const forgotPasswordFn = async (mail: ForgotPasswordInput) => {
   return response.data;
 };
 
-export const updateUserFn = async (user: IUser) => {
+export const updateUserFn = async (user: UpdateUserInput) => {
   const response = await api.post<IGenericResponse>('users/update', user);
   return response.data;
 };

@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import TextFieldIcon from '../../components/form/TextFieldIcon';
 import { FaRegUser } from 'react-icons/fa';
 import { RiLockPasswordLine } from 'react-icons/ri';
-import SubmitButton from '../UiElements/SubmitButton';
+import SubmitButton from '../../components/form/SubmitButton';
 import { useMutation } from '@tanstack/react-query';
 import { useStateContext } from '../../context';
 import { loginUserFn } from '../../services/authApi';
@@ -67,15 +67,14 @@ const SignIn = () => {
     if (null !== redirectAccount) {
       const loginInput: LoginInput = {
         username: redirectAccount,
-        password: "",
+        password: '',
         isGoogle: true,
-      }
+      };
       loginUser(loginInput);
     }
   }, [redirectAccount]);
-  
 
-  const onSubmitHandler: SubmitHandler<LoginInput> = (values) => {
+  const onSubmitHandler: SubmitHandler<LoginInput> = values => {
     // // 👇 Executing the loginUser Mutation
     loginUser(values);
   };
@@ -115,7 +114,9 @@ const SignIn = () => {
                   icon={<RiLockPasswordLine />}
                 />
 
-                <SubmitButton label="Sign In" isPending={isPending} />
+                <div className="mb-5">
+                  <SubmitButton label="Sign In" isPending={isPending} />
+                </div>
 
                 <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>
