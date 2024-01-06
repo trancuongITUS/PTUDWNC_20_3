@@ -9,6 +9,7 @@ export interface IUser {
   createdAt?: string;
   updatedAt?: string;
   __v?: number;
+  idRole?: number;
 }
 
 export interface IGenericResponse {

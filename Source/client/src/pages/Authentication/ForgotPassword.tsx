@@ -5,7 +5,6 @@ import { MdOutlineEmail } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TextFieldIcon from '../../components/form/TextFieldIcon';
-import { useStateContext } from '../../context';
 import { ForgotPasswordInput, forgotPasswordSchema } from '../../models/ForgotPassword';
 import { forgotPasswordFn } from '../../services/authApi';
 import SubmitButton from '../UiElements/SubmitButton';
@@ -21,18 +20,15 @@ const ForgotPassword = () => {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const stateContext = useStateContext();
-
   //  API Login Mutation
   const { mutate: forgotPassword, isPending } = useMutation({
     mutationFn: (mail: ForgotPasswordInput) => forgotPasswordFn(mail),
     onSuccess: data => {
-      toast.success('You successfully logged in', {
+      toast.success(data.message, {
         hideProgressBar: true,
         autoClose: 1000,
       });
-      stateContext.dispatch({ type: 'SET_USER', payload: data.user });
-      navigate('/');
+      navigate('/login');
     },
     onError: (error: any) => {
       toast.error((error as any).response.data.message, {
@@ -70,7 +66,7 @@ const ForgotPassword = () => {
                   icon={<MdOutlineEmail />}
                 />
 
-                <SubmitButton label="Sign In" isPending={isPending} />
+                <SubmitButton label="Send Email" isPending={isPending} />
 
                 <div className="mt-6 text-center">
                   <Link to="/login" className="text-primary">

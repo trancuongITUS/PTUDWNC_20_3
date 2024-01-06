@@ -1,10 +1,13 @@
-import cors, { CorsOptions } from "cors";
+import cors from "cors";
 import express, { Application } from "express";
 import authRoutes from "./auth/auth.routes";
 import DBConnector from "./db/DBConnector";
-import { initModels } from "./models/init-models";
 import userRoutes from "./routes/user.routes";
+import classRoutes from "./routes/class.routes";
 import cookieParser from "cookie-parser";
+import passportConfig from "./auth/passport/passport.config";
+import session from "express-session";
+import Constants from "./utils/Constants";
 
 
 export default class Server {
@@ -12,23 +15,17 @@ export default class Server {
 
     constructor(app: Application) {
         this.configServer(app);
+        this.configPassport(app);
         this.configRoutes(app);
         this.connectDatabase();
     }
 
     private configServer(app: Application) {
-        const CORS_OPTIONS: CorsOptions = {
-            origin: 'http://127.0.0.1:5173',
-            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-            preflightContinue: false,
-            optionsSuccessStatus: 204,
-            credentials: true,
-        }
-
-        app.use(cors(CORS_OPTIONS));
+        app.use(cors(Constants.CORS_OPTIONS));
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
         app.use(cookieParser());
+        app.use(session(Constants.SESSION_OPTIONS));
     }
 
     private configRoutes(app: Application) {
@@ -36,6 +33,8 @@ export default class Server {
         app.use('/auth', authRoutes);
         /** Config user-routes */
         app.use('/users', userRoutes);
+        /** Config user-routes */
+        app.use('/class', classRoutes);
     }
 
     private async connectDatabase(): Promise<void> {
@@ -44,5 +43,10 @@ export default class Server {
         } catch (error) {
             console.error('Unable to connect to the database:', error);
         }
+    }
+
+    private configPassport(app: Application) {
+        app.use(passportConfig.initialize());
+        app.use(passportConfig.session());
     }
 }

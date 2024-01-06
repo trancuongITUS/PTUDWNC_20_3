@@ -7,8 +7,11 @@ import TextField from '../components/form/TextField';
 import { ChangePasswordInput, changePasswordSchema } from '../models/ChangePassword';
 import { changePasswordFn } from '../services/authApi';
 import SubmitButton from './UiElements/SubmitButton';
+import { useNavigate } from 'react-router-dom';
 
 const ChangePassword = () => {
+  const navigate = useNavigate();
+  
   const {
     control,
     formState: { errors },
@@ -27,6 +30,7 @@ const ChangePassword = () => {
         autoClose: 1000,
       });
       reset({});
+      navigate('/');
     },
     onError(error: any) {
       toast.error((error as any).response.data.message, {
@@ -47,39 +51,50 @@ const ChangePassword = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Change Password" />
+      <div className="mx-auto max-w-270">
+        <Breadcrumb pageName="Change Password" />
+        <div className="grid grid-cols-5 gap-8">
+          <div className="col-span-5 xl:col-span-5">
+            {/* <!-- orm --> */}
+            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+              <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
+                <div className="p-6.5">
+                  <TextField
+                    control={control}
+                    name="oldPassword"
+                    errors={errors}
+                    label="Old Password"
+                    type="password"
+                    placeholer="Enter your old password"
+                  />
 
-      <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
-        <div className="flex flex-col gap-9">
-          {/* <!-- orm --> */}
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
-              <div className="p-6.5">
-                <TextField
-                  control={control}
-                  name="password"
-                  errors={errors}
-                  label="Password"
-                  type="password"
-                  placeholer="Enter your new password"
-                />
+                  <br />
+                  <TextField
+                    control={control}
+                    name="newPassword"
+                    errors={errors}
+                    label="New Password"
+                    type="password"
+                    placeholer="Enter your new password"
+                  />
 
-                <br />
+                  <br />
 
-                <TextField
-                  control={control}
-                  name="passwordConfirm"
-                  errors={errors}
-                  label="Confirm password"
-                  type="password"
-                  placeholer="Enter your new password again"
-                />
+                  <TextField
+                    control={control}
+                    name="passwordConfirm"
+                    errors={errors}
+                    label="Confirm Password"
+                    type="password"
+                    placeholer="Enter your new password again"
+                  />
 
-                <br />
+                  <br />
 
-                <SubmitButton label="Change password" isPending={isPending} />
-              </div>
-            </form>
+                  <SubmitButton label="Change password" isPending={isPending} />
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

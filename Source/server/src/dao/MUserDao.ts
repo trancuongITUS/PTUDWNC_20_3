@@ -29,7 +29,7 @@ export default class MUserDao {
         now.setTime(now.getTime() + 5 * 60 * 1000);
 
         await this.getDao().update(
-            {refreshToken: refreshToken, expiredDate: now}, {
+            {refreshToken: refreshToken, expiredRefreshToken: now}, {
                 where: {
                     id: id,
                 }
@@ -49,7 +49,7 @@ export default class MUserDao {
 
     public static async logout(username: string): Promise<void> {
         await this.getDao().update(
-            {refreshToken: null, expiredDate: null}, {
+            {refreshToken: null, expiredRefreshToken: null}, {
                 where: {
                     username: username,
                 }
@@ -75,6 +75,30 @@ export default class MUserDao {
 
     public static async findAll(): Promise<MUser[]> {
         return await this.getDao().findAll();
+    }
+
+    public static async findById(id: number): Promise<MUser | null> {
+        return await this.getDao().findByPk(id);
+    }
+
+    public static async verifyEmail(id: number): Promise<void> {
+        await this.getDao().update(
+            {isVerifiedEmail: true}, {
+                where: {
+                    id: id,
+                }
+            }
+        )
+    }
+
+    public static async updatePassword(id: number, passwordHash: string): Promise<void> {
+        await this.getDao().update(
+            {pwdHash: passwordHash}, {
+                where: {
+                    id: id,
+                }
+            }
+        )
     }
 }
 

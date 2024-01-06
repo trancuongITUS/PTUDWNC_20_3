@@ -6,11 +6,16 @@ import { initModels, MUserCreationAttributes } from "~/models/init-models";
 import Util from "~/utils/Util";
 import { MUser } from "~/models/MUser";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
+import { getIdByRoleName } from "~/enums/role.enum";
 
 export default class AuthService {
 
     public static async getUserByUsername(username: string): Promise<MUser | null> {
         return await MUserDao.findByUsername(username); 
+    }
+
+    public static async getUserByEmail(email: string): Promise<MUser | null> {
+        return await MUserDao.findByEmail(email);
     }
 
     public static async isDuplicateUsername(username: string): Promise<boolean> {
@@ -38,7 +43,7 @@ export default class AuthService {
     }
 
     public static isValidPassword(password: string, user: MUser) {
-        return bcrypt.compareSync(password, user.pwdHash);
+        return bcrypt.compareSync(password, user.pwdHash!);
     }
 
     public static async generateToken(payload: Object, secretKey: string, tokenLife: string): Promise<string> {
@@ -62,16 +67,24 @@ export default class AuthService {
         return await MUserDao.logout(username);
     }
 
-    public static async register(username: string, password: string, email: string, fullname: string): Promise<boolean> {
+    public static async register(username: string
+        , password: string
+        , email: string
+        , fullname: string
+        , role: string
+        , codeVerifyEmail: string): Promise<boolean> {
         let isSuccess: boolean = false;
 
         try {
             const PASSWORD_HASH = bcrypt.hashSync(password, 10);
+            const idRole = getIdByRoleName(role);
             const NEW_USER: MUserCreationAttributes = {
                 username: username,
                 pwdHash: PASSWORD_HASH,
                 email: email,
                 fullname: fullname,
+                idRole: idRole,
+                codeVerifyEmail: codeVerifyEmail,
                 createdDate: new Date(),
                 createdUser: 1,
                 lastUpdDate: new Date(),
@@ -81,11 +94,9 @@ export default class AuthService {
             await MUserDao.create(NEW_USER);
             isSuccess = true;
         } catch (error) {
-
             console.log(error);
             isSuccess = false;
         } finally {
-
             return isSuccess;
         }
     }
@@ -107,5 +118,52 @@ export default class AuthService {
 
     public static async verifyToken(accessToken: string, secretKey: string): Promise<JwtPayload | string> {
         return await verify(accessToken, secretKey);
+    }
+
+    public static async verifyEmail(userId: number): Promise<boolean> {
+        let isSuccess: boolean = false;
+
+        try {
+            await MUserDao.verifyEmail(userId);
+            isSuccess = true;
+        } catch (error) {
+            console.log(error);
+            isSuccess = false;
+        } finally {
+            return isSuccess;
+        }
+    }
+
+    public static async updatePassword(userId: number, newPassword: string): Promise<boolean> {
+        let isSuccess: boolean = false;
+
+        try {
+            const PASSWORD_HASH = bcrypt.hashSync(newPassword, 10);
+            await MUserDao.updatePassword(userId, PASSWORD_HASH);
+            isSuccess = true;
+        } catch (error) {
+            console.log(error);
+            isSuccess = false;
+        } finally {
+            return isSuccess;
+        }
+    }
+
+    public static async isValidOldPassword(userId: number, oldPassword: string): Promise<boolean> {
+        let isValid: boolean = false;
+
+        try {
+            const user = await MUserDao.findById(userId);
+            if (Util.isNullOrUndefined(user)) {
+                isValid = false;
+            } else {
+                isValid = bcrypt.compareSync(oldPassword, user!.pwdHash!);
+            }
+        } catch (error) {
+            console.log(error);
+            isValid = false;
+        } finally {
+            return isValid;
+        }
     }
 }
