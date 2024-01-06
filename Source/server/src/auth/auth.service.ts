@@ -6,6 +6,7 @@ import { initModels, MUserCreationAttributes } from "~/models/init-models";
 import Util from "~/utils/Util";
 import { MUser } from "~/models/MUser";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
+import { getIdByRoleName } from "~/enums/role.enum";
 
 export default class AuthService {
 
@@ -66,16 +67,23 @@ export default class AuthService {
         return await MUserDao.logout(username);
     }
 
-    public static async register(username: string, password: string, email: string, fullname: string, codeVerifyEmail: string): Promise<boolean> {
+    public static async register(username: string
+        , password: string
+        , email: string
+        , fullname: string
+        , role: string
+        , codeVerifyEmail: string): Promise<boolean> {
         let isSuccess: boolean = false;
 
         try {
             const PASSWORD_HASH = bcrypt.hashSync(password, 10);
+            const idRole = getIdByRoleName(role);
             const NEW_USER: MUserCreationAttributes = {
                 username: username,
                 pwdHash: PASSWORD_HASH,
                 email: email,
                 fullname: fullname,
+                idRole: idRole,
                 codeVerifyEmail: codeVerifyEmail,
                 createdDate: new Date(),
                 createdUser: 1,
@@ -123,6 +131,39 @@ export default class AuthService {
             isSuccess = false;
         } finally {
             return isSuccess;
+        }
+    }
+
+    public static async updatePassword(userId: number, newPassword: string): Promise<boolean> {
+        let isSuccess: boolean = false;
+
+        try {
+            const PASSWORD_HASH = bcrypt.hashSync(newPassword, 10);
+            await MUserDao.updatePassword(userId, PASSWORD_HASH);
+            isSuccess = true;
+        } catch (error) {
+            console.log(error);
+            isSuccess = false;
+        } finally {
+            return isSuccess;
+        }
+    }
+
+    public static async isValidOldPassword(userId: number, oldPassword: string): Promise<boolean> {
+        let isValid: boolean = false;
+
+        try {
+            const user = await MUserDao.findById(userId);
+            if (Util.isNullOrUndefined(user)) {
+                isValid = false;
+            } else {
+                isValid = bcrypt.compareSync(oldPassword, user!.pwdHash!);
+            }
+        } catch (error) {
+            console.log(error);
+            isValid = false;
+        } finally {
+            return isValid;
         }
     }
 }

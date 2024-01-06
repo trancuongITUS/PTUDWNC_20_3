@@ -26,7 +26,7 @@ export const updateUserFn = async (user: IUser) => {
 };
 
 export const changePasswordFn = async (pass: ChangePasswordInput) => {
-  const response = await api.post<IGenericResponse>('auth/renew-password ', pass);
+  const response = await api.post<IGenericResponse>('auth/change-password ', pass);
   return response.data;
 };
 

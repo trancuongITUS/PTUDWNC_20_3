@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Util from "~/utils/Util";
 import AuthService from "./auth.service";
 import transporter from "~/mail/nodemailer.config";
+import { getRoleNameById } from "~/enums/role.enum";
 
 export default class AuthController {
     async register(req: Request, res: Response) {
@@ -10,6 +11,7 @@ export default class AuthController {
             const PASSWORD_RAW: string = req.body.password;
             const EMAIL: string = req.body.email;
             const FULLNAME: string = req.body.fullname;
+            const ROLE: string = req.body.role;
 
             /** Check username already exists */
             const IS_DUPLICATE_USERNAME: boolean = await AuthService.isDuplicateUsername(USERNAME);
@@ -25,16 +27,11 @@ export default class AuthController {
                 return;
             }
 
-            const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let codeVerifyEmail = '';
-            for (let i = 0; i < CHARACTERS.length; i++) {
-                const randomIndex = Math.floor(Math.random() * CHARACTERS.length);
-                codeVerifyEmail += CHARACTERS.charAt(randomIndex);
-            }
+            let codeVerifyEmail = Util.generateRandomString(50);
             codeVerifyEmail += '-';
             codeVerifyEmail += EMAIL;
 
-            const IS_REGISTER_SUCCESS: boolean = await AuthService.register(USERNAME, PASSWORD_RAW, EMAIL, FULLNAME, codeVerifyEmail);
+            const IS_REGISTER_SUCCESS: boolean = await AuthService.register(USERNAME, PASSWORD_RAW, EMAIL, FULLNAME, ROLE, codeVerifyEmail);
             if (!IS_REGISTER_SUCCESS) {
                 res.status(500).send({message: "Internal Server Error."});
                 return;
@@ -89,6 +86,8 @@ export default class AuthController {
                 user_id: user?.id,
                 username: user?.username,
                 email: user?.email,
+                role: getRoleNameById(user?.idRole!),
+                isVerifyEmail: user?.isVerifiedEmail,
             }
             const ACCESS_TOKEN = await AuthService.generateToken(DATA_FOR_ACCESS_TOKEN, process.env.SECRET_KEY!, process.env.ACCESS_TOKEN_LIFE!);
             if (Util.isNullOrUndefined(ACCESS_TOKEN)) {
@@ -100,6 +99,8 @@ export default class AuthController {
                 user_id: user?.id,
                 username: user?.username,
                 email: user?.email,
+                role: getRoleNameById(user?.idRole!),
+                isVerifyEmail: user?.isVerifiedEmail,
                 access_token: ACCESS_TOKEN,
             }
             let refreshToken = await AuthService.generateToken(DATA_FOR_REFRESH_TOKEN, process.env.SECRET_KEY!, process.env.REFRESH_TOKEN_LIFE!);
@@ -159,7 +160,6 @@ export default class AuthController {
                 email: req.body.payload.email,
                 access_token: ACCESS_TOKEN,
             }
-            console.log(DATA_FOR_REFRESH_TOKEN)
             let refreshToken = await AuthService.generateToken(DATA_FOR_REFRESH_TOKEN, process.env.SECRET_KEY!, process.env.REFRESH_TOKEN_LIFE!);
             await AuthService.updateRefreshToken(DATA_FOR_REFRESH_TOKEN.user_id, refreshToken);
 
@@ -179,14 +179,82 @@ export default class AuthController {
     }
 
     async verifyEmail(req: Request, res: Response) {
-        const CODE_VERIFY_EMAIL = req.params.codeVerifyEmail;
-        const EMAIL = CODE_VERIFY_EMAIL.split('-')[1];
+        try {
+            const CODE_VERIFY_EMAIL = req.params.codeVerifyEmail;
+            const EMAIL = CODE_VERIFY_EMAIL.split('-')[1];
 
-        const user = await AuthService.getUserByEmail(EMAIL);
-        if (EMAIL === user?.email) {
-            await AuthService.verifyEmail(user?.id!);
-            res.redirect('http://127.0.0.1:5173/');
+            const user = await AuthService.getUserByEmail(EMAIL);
+            if (EMAIL === user?.email) {
+                await AuthService.verifyEmail(user?.id!);
+                res.redirect('http://127.0.0.1:5173/');
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({message: "Internal Server Error."});
         }
+    }
 
+    async forgotPassword(req: Request, res: Response) {
+        try {
+            const EMAIL = req.body.email;
+
+            const user = await AuthService.getUserByEmail(EMAIL);
+            if (Util.isNullOrUndefined(user)) {
+                res.status(409).json({message: "Email does not exists"});
+                return;
+            }
+
+            const RESET_PASSWORD_CODE = Util.generateRandomString(10);
+            const MAIL_OPTIONS = {
+                from: '',
+                to: EMAIL,
+                subject: 'Reset your password',
+                text: `Your password is reset: ${RESET_PASSWORD_CODE}`
+            };
+            transporter.sendMail(MAIL_OPTIONS, async (error: any, info: any) => {
+                if (error) {
+                    console.log(error);
+                    res.status(409).send({message: "Can not send email to reset your password."});
+                    return;
+                } else {
+                    console.log('Email sent: ' + info.response);
+
+                    await AuthService.updatePassword(user?.id!, RESET_PASSWORD_CODE);
+                    res.status(200).json({
+                        message: "An email has been sent to your inbox, please reset your password using password in email.",
+                    });
+                }
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({message: "Internal Server Error."});
+        }
+    }
+
+    async changePassword(req: Request, res: Response) {
+        try {
+            const USER_ID = req.body.user_payload.user_id;
+            const OLD_PASSWORD = req.body.oldPassword;
+            const NEW_PASSWORD = req.body.newPassword;
+
+            const IS_VALID_OLD_PASSWORD: boolean = await AuthService.isValidOldPassword(USER_ID, OLD_PASSWORD);
+            if (!IS_VALID_OLD_PASSWORD) {
+                res.status(401).json({message: "Old password does not match"});
+                return;
+            }
+
+            const IS_CHANGE_PASSWORD_SUCCESS: boolean = await AuthService.updatePassword(USER_ID, NEW_PASSWORD);
+            if (!IS_CHANGE_PASSWORD_SUCCESS) {
+                res.status(500).send({message: "Internal Server Error."});
+                return;
+            }
+
+            res.status(200).json({
+                message: "Change password OK",
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({message: "Internal Server Error."});
+        }
     }
 }

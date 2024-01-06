@@ -17,6 +17,8 @@ class AuthRoutes {
         this.router.post('/login', this.authController.login);
         this.router.post('/logout', this.authController.logout);
         this.router.post('/refresh', this.authMiddleware.verifyRefreshToken, this.authController.refresh);
+        this.router.post('/forgot-password', this.authController.forgotPassword);
+        this.router.post('/change-password', this.authMiddleware.isAuth, this.authController.changePassword);
 
         this.router.get('/google', passportConfig.authenticate('google', { scope: ['profile', 'email'] }));
         this.router.get('/google/callback', (req: Request, res: Response, next: NextFunction) => {

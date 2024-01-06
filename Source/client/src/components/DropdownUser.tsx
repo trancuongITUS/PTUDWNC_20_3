@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useStateContext } from '../context';
 import UserOne from '../images/user/user-01.png';
 import { logoutUserFn } from '../services/authApi';
+import { getRoleNameById } from '../enums/role.enum';
 
 const DropdownUser = () => {
   const [, , removeCookieRefresh] = useCookies(['refreshToken']);
@@ -89,9 +90,9 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {user?.fullname}
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">{getRoleNameById(user?.idRole!)}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -154,7 +155,7 @@ const DropdownUser = () => {
           </li>
           <li>
             <Link
-              to="#"
+              to="/change-password"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
             >
               <svg
@@ -170,10 +171,10 @@ const DropdownUser = () => {
                   fill=""
                 />
               </svg>
-              My Contacts
+              Change Password
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               to="/settings"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
@@ -197,7 +198,7 @@ const DropdownUser = () => {
               </svg>
               Account Settings
             </Link>
-          </li>
+          </li> */}
         </ul>
         <button
           onClick={onLogoutHandler}

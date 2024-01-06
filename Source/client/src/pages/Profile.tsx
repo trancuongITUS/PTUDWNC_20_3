@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import Breadcrumb from '../components/Breadcrumb';
 import fireToast from '../hooks/fireToast';
-import userThree from '../images/user/user-03.png';
 import { IoPersonOutline } from 'react-icons/io5';
 
 const Profile = () => {
@@ -40,10 +39,10 @@ const Profile = () => {
   return (
     <>
       <div className="mx-auto max-w-270">
-        <Breadcrumb pageName="Settings" />
+        <Breadcrumb pageName="Profile" />
 
         <div className="grid grid-cols-5 gap-8">
-          <div className="col-span-5 xl:col-span-3">
+          <div className="col-span-5 xl:col-span-5">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">Personal Information</h3>
@@ -221,7 +220,7 @@ const Profile = () => {
               </div>
             </div>
           </div>
-          <div className="col-span-5 xl:col-span-2">
+          {/* <div className="col-span-5 xl:col-span-2">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">Your Photo</h3>
@@ -304,7 +303,7 @@ const Profile = () => {
                 </form>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

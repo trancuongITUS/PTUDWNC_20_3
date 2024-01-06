@@ -38,7 +38,7 @@ const SignIn = () => {
         hideProgressBar: true,
         autoClose: 1000,
       });
-      stateContext.dispatch({ type: 'SET_USER', payload: data.user });
+      stateContext.dispatch({ type: 'SET_USER', payload: data.user! });
       navigate('/');
     },
     onError: (error: any) => {

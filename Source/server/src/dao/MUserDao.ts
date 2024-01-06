@@ -90,5 +90,15 @@ export default class MUserDao {
             }
         )
     }
+
+    public static async updatePassword(id: number, passwordHash: string): Promise<void> {
+        await this.getDao().update(
+            {pwdHash: passwordHash}, {
+                where: {
+                    id: id,
+                }
+            }
+        )
+    }
 }
 
