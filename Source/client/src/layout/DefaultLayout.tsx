@@ -1,12 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { api } from '../api';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useStateContext } from '../context';
 import { IUserResponse } from '../services/types';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../api';
-import Loader from '../common/Loader';
 
 const DefaultLayout = () => {
   const location = useLocation();
@@ -19,17 +18,11 @@ const DefaultLayout = () => {
     return response.data.result;
   };
 
-  const { isLoading, isFetching, data } = useQuery({
+  const { data } = useQuery({
     queryFn: getMeFn,
     queryKey: ['authUser'],
     retry: 1,
   });
-
-  const loading = isLoading || isFetching;
-
-  if (loading) {
-    return <Loader />;
-  }
 
   if (!data) {
     return <Navigate to="/login" state={{ from: location }} replace />;

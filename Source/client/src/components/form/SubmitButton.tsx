@@ -1,16 +1,21 @@
 interface ISubmitButton {
   label?: string;
   isPending?: boolean;
+  disable?: boolean;
+  onClick?: () => void;
 }
 
-const SubmitButton = ({ label, isPending }: ISubmitButton) => {
+const SubmitButton = ({ label, isPending, onClick, disable }: ISubmitButton) => {
   return (
     <div>
-      <input
-        type="submit"
-        value={isPending === true ? '...' : label || 'Submit'}
+      <button
+        type={'button'}
         className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
-      />
+        onClick={onClick}
+        disabled={disable}
+      >
+        {isPending ? '...' : label}
+      </button>
     </div>
   );
 };

@@ -57,7 +57,7 @@ const ForgotPassword = () => {
                 Forgot Password
               </h2>
 
-              <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
+              <form>
                 <TextFieldIcon
                   control={control}
                   name="email"
@@ -66,7 +66,11 @@ const ForgotPassword = () => {
                   icon={<MdOutlineEmail />}
                 />
 
-                <SubmitButton label="Send Email" isPending={isPending} />
+                <SubmitButton
+                  label="Send Email"
+                  isPending={isPending}
+                  onClick={handleSubmit(onSubmitHandler, onErrorHandler)}
+                />
 
                 <div className="mt-6 text-center">
                   <Link to="/login" className="text-primary">
