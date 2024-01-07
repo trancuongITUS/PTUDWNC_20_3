@@ -1,0 +1,71 @@
+version: "3"
+
+services:
+  back-end:
+    build:
+      context: Source/server
+    container_name: back-end
+    working_dir: /usr/src/app
+    networks:
+      - node-network
+    volumes:
+      - ./Source/server:/usr/src/app
+      - /usr/src/app/node_modules
+    tty: true
+    ports:
+      - "8080:8080"
+    command: npm run dev
+    depends_on:
+      - db
+
+  front-end:
+    build:
+      context: Source/client
+    container_name: front-end
+    working_dir: /usr/src/app
+    networks:
+      - node-network
+    volumes:
+      - ./Source/client:/usr/src/app
+      - /usr/src/app/node_modules
+    tty: true
+    ports:
+      - "5173:5173"
+    command: npm run start
+
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    tty: true
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./Database/InitDatabase.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=ptudwnc
+      # - POSTGRES_USER=postgres
+      # - POSTGRES_PASSWORD=123456?a
+      # - POSTGRES_ROOT_PASSWORD=root
+    ports:
+      - 15432:5432
+    networks:
+      - node-network
+
+  nginx:
+    build:
+      context: nginx
+    container_name: nginx
+    restart: always
+    tty: true
+    ports:
+      - "8000:80"
+    networks:
+      - node-network
+    depends_on:
+      - back-end
+      - front-end
+
+networks:
+  node-network:
+    driver: bridge
