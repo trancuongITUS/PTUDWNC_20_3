@@ -1,20 +1,18 @@
-import Loader from '../../common/Loader';
 import classNames from 'classnames';
 
-interface ISubmitButton {
+export interface ISubmitButton {
   label?: string;
   isPending?: boolean;
-  submit?: boolean;
   transparent?: boolean;
   onClick?: () => void;
   disable?: boolean;
 }
 
-const Button = ({ label, isPending, submit, transparent, onClick, disable }: ISubmitButton) => {
+const Button = ({ label, isPending, transparent, onClick, disable }: ISubmitButton) => {
   return (
     <div>
       <button
-        type={submit ? 'submit' : 'button'}
+        type="button"
         className={classNames(
           'w-full items-center justify-center rounded-md border border-primary py-3 px-10 text-center font-medium  lg:px-8 xl:px-10',
           {
@@ -27,7 +25,7 @@ const Button = ({ label, isPending, submit, transparent, onClick, disable }: ISu
         onClick={onClick}
         disabled={disable}
       >
-        {isPending ? <Loader /> : label}
+        {isPending ? '...' : label}
       </button>
     </div>
   );

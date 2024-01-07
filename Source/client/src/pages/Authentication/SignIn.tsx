@@ -96,7 +96,7 @@ const SignIn = () => {
                 Sign In to HCMUS
               </h2>
 
-              <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
+              <form>
                 <TextFieldIcon
                   control={control}
                   name="username"
@@ -115,7 +115,11 @@ const SignIn = () => {
                 />
 
                 <div className="mb-5">
-                  <SubmitButton label="Sign In" isPending={isPending} />
+                  <SubmitButton
+                    label="Sign In"
+                    isPending={isPending}
+                    onClick={handleSubmit(onSubmitHandler, onErrorHandler)}
+                  />
                 </div>
 
                 <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
