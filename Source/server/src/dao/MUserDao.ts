@@ -74,7 +74,31 @@ export default class MUserDao {
     }
 
     public static async findAll(): Promise<MUser[]> {
-        return await this.getDao().findAll();
+        return await this.getDao().findAll({
+            order: [
+                ['id', 'ASC'],
+            ]
+        });
+    }
+
+    public static async findAllStudents(): Promise<MUser[]> {
+        return await this.getDao().findAll({
+            where: {
+                idRole: 2,
+            },
+            order: [
+                ['id', 'ASC'],
+            ]
+        });
+    }
+
+    public static async findStudentById(id: number): Promise<MUser | null> {
+        return await this.getDao().findOne({
+            where: {
+                id: id,
+                idRole: 2,
+            }
+        });
     }
 
     public static async findById(id: number): Promise<MUser | null> {
@@ -99,6 +123,56 @@ export default class MUserDao {
                 }
             }
         )
+    }
+
+    public static async lock(id: number): Promise<boolean> {
+        const NOW = new Date();
+
+        const IS_LOCK_SUCCESS = await this.getDao().update(
+            {isActive: false, lastUpdDate: NOW, lastUpdUser: 1}, {
+                where: {
+                    id: id,
+                }
+            }
+        )
+
+        return IS_LOCK_SUCCESS[0] > 0;
+    }
+
+    public static async unlock(id: number): Promise<boolean> {
+        const NOW = new Date();
+
+        const IS_LOCK_SUCCESS = await this.getDao().update(
+            {isActive: true, lastUpdDate: NOW, lastUpdUser: 1}, {
+                where: {
+                    id: id,
+                }
+            }
+        )
+
+        return IS_LOCK_SUCCESS[0] > 0;
+    }
+
+    public static async delete(id: number): Promise<boolean> {
+        const IS_DELETE_SUCCESS = await this.getDao().destroy({
+            where: {
+                id: id,
+            }
+        });
+
+        return IS_DELETE_SUCCESS > 0;
+    }
+
+    public static async updateStudentId(id: number, studentId: string): Promise<boolean> {
+        const IS_UPDATE_SUCCESS = await this.getDao().update(
+            {studentId: studentId}, {
+                where: {
+                    id: id,
+                }
+            }
+        )
+
+        return IS_UPDATE_SUCCESS[0] > 0;
     }
 }
 

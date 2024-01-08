@@ -24,6 +24,9 @@ const ChangePassword = Loadable(lazy(() => import('../pages/ChangePassword')));
 const Tables = Loadable(lazy(() => import('../pages/Tables')));
 const Alerts = Loadable(lazy(() => import('../pages/UiElements/Alerts')));
 const Buttons = Loadable(lazy(() => import('../pages/UiElements/Buttons')));
+const Users = Loadable(lazy(() => import('../pages/Admin/Users')));
+const Classes = Loadable(lazy(() => import('../pages/Admin/Classes')));
+const Students = Loadable(lazy(() => import('../pages/Admin/Students')));
 
 const authRoutes: RouteObject = {
   path: '*',
@@ -102,6 +105,18 @@ const coreRoutes: RouteObject = {
       path: 'ui/buttons',
       element: <Buttons />,
     },
+    {
+      path: 'admin/users',
+      element: <Users />,
+    },
+    {
+      path: 'admin/classes',
+      element: <Classes />,
+    },
+    {
+      path: 'admin/students',
+      element: <Students />,
+    }
   ],
 };
 

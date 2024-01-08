@@ -177,3 +177,6 @@ VALUES (1, (SELECT id FROM m_user WHERE username = 'student1'), (SELECT id FROM 
 UPDATE t_class SET created_user = (SELECT id FROM m_user WHERE username = 'teacher1'), last_upd_user = (SELECT id FROM m_user WHERE username = 'teacher1') WHERE id = 1;
 UPDATE t_class SET created_user = (SELECT id FROM m_user WHERE username = 'teacher2'), last_upd_user = (SELECT id FROM m_user WHERE username = 'teacher2') WHERE id = 2;
 UPDATE t_class SET created_user = (SELECT id FROM m_user WHERE username = 'teacher3'), last_upd_user = (SELECT id FROM m_user WHERE username = 'teacher3') WHERE id = 3;
+
+ALTER TABLE m_user ADD COLUMN is_active boolean default true;
+ALTER TABLE m_user ADD COLUMN student_id character varying(255) UNIQUE;
