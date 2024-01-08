@@ -23,11 +23,13 @@ export interface MUserAttributes {
     createdUser?: number;
     lastUpdDate?: Date;
     lastUpdUser?: number;
+    isActive?: boolean;
+    studentId?: string | null;
 }
 
 export type MUserPk = "id";
 export type MUserId = MUser[MUserPk];
-export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "refreshToken" | "expiredRefreshToken" | "isGoogle" | "isVerifiedEmail" | "codeVerifyEmail" | "idRole" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
+export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "refreshToken" | "expiredRefreshToken" | "isGoogle" | "isVerifiedEmail" | "codeVerifyEmail" | "idRole" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser" | "isActive" | "studentId";
 export type MUserCreationAttributes = Optional<MUserAttributes, MUserOptionalAttributes>;
 
 export class MUser extends Model<MUserAttributes, MUserCreationAttributes> implements MUserAttributes {
@@ -47,6 +49,8 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
     createdUser?: number;
     lastUpdDate?: Date;
     lastUpdUser?: number;
+    isActive?: boolean;
+    studentId?: string | null;
 
     // MUser belongsTo MRole via idRole
     idRoleMRole!: MRole;
@@ -244,6 +248,18 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
                 key: 'id'
             },
             field: 'last_upd_user'
+        },
+        isActive: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: true,
+            field: 'is_active'
+        },
+        studentId: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            unique: "m_user_student_id_key",
+            field: 'student_id'
         }
     }, {
         tableName: 'm_user',
@@ -262,6 +278,13 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
                 unique: true,
                 fields: [
                     { name: "id" },
+                ]
+            },
+            {
+                name: "m_user_student_id_key",
+                unique: true,
+                fields: [
+                    { name: "student_id" },
                 ]
             },
             {
