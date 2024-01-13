@@ -1,37 +1,37 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { MUser, MUserId } from './MUser';
 import type { TClass, TClassId } from './TClass';
+import type { TClassStudent, TClassStudentId } from './TClassStudent';
 import type { TGradeComposition, TGradeCompositionId } from './TGradeComposition';
 
 export interface RClassStudentGradeAttributes {
     idClass: number;
-    idStudent: number;
+    idClassStudent: number;
     idGradeComposition: number;
     grade?: number;
 }
 
-export type RClassStudentGradePk = "idClass" | "idStudent" | "idGradeComposition";
+export type RClassStudentGradePk = "idClass" | "idClassStudent" | "idGradeComposition";
 export type RClassStudentGradeId = RClassStudentGrade[RClassStudentGradePk];
 export type RClassStudentGradeOptionalAttributes = "grade";
 export type RClassStudentGradeCreationAttributes = Optional<RClassStudentGradeAttributes, RClassStudentGradeOptionalAttributes>;
 
 export class RClassStudentGrade extends Model<RClassStudentGradeAttributes, RClassStudentGradeCreationAttributes> implements RClassStudentGradeAttributes {
     idClass!: number;
-    idStudent!: number;
+    idClassStudent!: number;
     idGradeComposition!: number;
     grade?: number;
 
-    // RClassStudentGrade belongsTo MUser via idStudent
-    idStudentMUser!: MUser;
-    getIdStudentMUser!: Sequelize.BelongsToGetAssociationMixin<MUser>;
-    setIdStudentMUser!: Sequelize.BelongsToSetAssociationMixin<MUser, MUserId>;
-    createIdStudentMUser!: Sequelize.BelongsToCreateAssociationMixin<MUser>;
     // RClassStudentGrade belongsTo TClass via idClass
     idClassTClass!: TClass;
     getIdClassTClass!: Sequelize.BelongsToGetAssociationMixin<TClass>;
     setIdClassTClass!: Sequelize.BelongsToSetAssociationMixin<TClass, TClassId>;
     createIdClassTClass!: Sequelize.BelongsToCreateAssociationMixin<TClass>;
+    // RClassStudentGrade belongsTo TClassStudent via idClassStudent
+    idClassStudentTClassStudent!: TClassStudent;
+    getIdClassStudentTClassStudent!: Sequelize.BelongsToGetAssociationMixin<TClassStudent>;
+    setIdClassStudentTClassStudent!: Sequelize.BelongsToSetAssociationMixin<TClassStudent, TClassStudentId>;
+    createIdClassStudentTClassStudent!: Sequelize.BelongsToCreateAssociationMixin<TClassStudent>;
     // RClassStudentGrade belongsTo TGradeComposition via idGradeComposition
     idGradeCompositionTGradeComposition!: TGradeComposition;
     getIdGradeCompositionTGradeComposition!: Sequelize.BelongsToGetAssociationMixin<TGradeComposition>;
@@ -50,15 +50,15 @@ export class RClassStudentGrade extends Model<RClassStudentGradeAttributes, RCla
             },
             field: 'id_class'
         },
-        idStudent: {
+        idClassStudent: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'm_user',
+                model: 't_class_student',
                 key: 'id'
             },
-            field: 'id_student'
+            field: 'id_class_student'
         },
         idGradeComposition: {
             type: DataTypes.INTEGER,
@@ -84,7 +84,7 @@ export class RClassStudentGrade extends Model<RClassStudentGradeAttributes, RCla
                 unique: true,
                 fields: [
                     { name: "id_class" },
-                    { name: "id_student" },
+                    { name: "id_class_student" },
                     { name: "id_grade_composition" },
                 ]
             },

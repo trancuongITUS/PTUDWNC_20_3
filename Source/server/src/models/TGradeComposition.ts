@@ -8,6 +8,7 @@ export interface TGradeCompositionAttributes {
     id: number;
     idClass?: number;
     gradeName: string;
+    gradeScale: number;
     gradePercent: number;
     recordVersion?: number;
     createdDate?: Date;
@@ -18,13 +19,14 @@ export interface TGradeCompositionAttributes {
 
 export type TGradeCompositionPk = "id";
 export type TGradeCompositionId = TGradeComposition[TGradeCompositionPk];
-export type TGradeCompositionOptionalAttributes = "id" | "idClass" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
+export type TGradeCompositionOptionalAttributes = "id" | "idClass" | "gradeScale" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
 export type TGradeCompositionCreationAttributes = Optional<TGradeCompositionAttributes, TGradeCompositionOptionalAttributes>;
 
 export class TGradeComposition extends Model<TGradeCompositionAttributes, TGradeCompositionCreationAttributes> implements TGradeCompositionAttributes {
     id!: number;
     idClass?: number;
     gradeName!: string;
+    gradeScale!: number;
     gradePercent!: number;
     recordVersion?: number;
     createdDate?: Date;
@@ -81,6 +83,12 @@ export class TGradeComposition extends Model<TGradeCompositionAttributes, TGrade
             type: DataTypes.STRING(50),
             allowNull: false,
             field: 'grade_name'
+        },
+        gradeScale: {
+            type: DataTypes.DECIMAL,
+            allowNull: false,
+            defaultValue: 100,
+            field: 'grade_scale'
         },
         gradePercent: {
             type: DataTypes.INTEGER,

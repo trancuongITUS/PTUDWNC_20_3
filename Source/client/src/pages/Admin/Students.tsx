@@ -46,7 +46,7 @@ const Students = () => {
             withCredentials: true,
         });
 
-        const response = await api.post('users/admin/upload-mapping-id-studentid', formData, {
+        await api.post('users/admin/upload-mapping-id-studentid', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },

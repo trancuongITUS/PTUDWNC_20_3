@@ -39,7 +39,20 @@ const SignIn = () => {
         autoClose: 1000,
       });
       stateContext.dispatch({ type: 'SET_USER', payload: data.user! });
-      navigate('/');
+      switch (data.user?.idRole) {
+        case 1:
+          navigate('/admin/users');
+          break;
+        case 2:
+          navigate('/joined-classes');
+          break;
+        case 3:
+          navigate('/');
+          break;
+        default:
+          navigate('/');
+          break;
+      }
     },
     onError: (error: any) => {
       toast.error((error as any).response.data.message, {

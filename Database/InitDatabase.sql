@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS m_user(
     , is_google boolean default false
     , is_verified_email boolean default false
     , code_verify_email character varying (255)
+    , is_active boolean default true
+    , student_id character varying(255) UNIQUE
     , id_role integer
     , record_version integer DEFAULT 0
     , created_date timestamp without time zone
@@ -46,11 +48,23 @@ CREATE TABLE IF NOT EXISTS t_class(
 ALTER TABLE t_class ADD CONSTRAINT created_user_fkey FOREIGN KEY (created_user) REFERENCES m_user(id);
 ALTER TABLE t_class ADD CONSTRAINT last_upd_user_fkey FOREIGN KEY (last_upd_user) REFERENCES m_user(id);
 
+/* table t_class_student */
+CREATE TABLE IF NOT EXISTS t_class_student(
+    id SERIAL
+    , id_class integer
+    , student_id character varying(255)
+    , fullname character varying (255)
+    , PRIMARY KEY (id)
+);
+
+ALTER TABLE t_class_student ADD CONSTRAINT id_class_fkey FOREIGN KEY (id_class) REFERENCES t_class(id);
+
 /* table r_class_user - relation of t_class and m_user */
 CREATE TABLE IF NOT EXISTS r_class_user(
     id_class integer
     , id_user integer
     , is_owner boolean default false
+    , is_student_mapped boolean default false
     , PRIMARY KEY (id_class, id_user)
 );
 ALTER TABLE r_class_user ADD CONSTRAINT id_class_fkey FOREIGN KEY (id_class) REFERENCES t_class(id);
@@ -61,6 +75,7 @@ CREATE TABLE IF NOT EXISTS t_grade_composition(
     id SERIAL
     , id_class integer
     , grade_name character varying(50) NOT NULL
+    , grade_scale numeric(20, 5) NOT NULL DEFAULT 100
     , grade_percent integer NOT NULL
     , record_version integer default 0
     , created_date timestamp without time zone
@@ -76,13 +91,13 @@ ALTER TABLE t_grade_composition ADD CONSTRAINT last_upd_user_fkey FOREIGN KEY (l
 /* table r_class_student_grade - relation of t_class, m_user(student), t_grade_composition */
 CREATE TABLE IF NOT EXISTS r_class_student_grade(
     id_class integer
-    , id_student integer
+    , id_class_student integer
     , id_grade_composition integer
     , grade numeric(20, 5)
-    , PRIMARY KEY (id_class, id_student, id_grade_composition)
+    , PRIMARY KEY (id_class, id_class_student, id_grade_composition)
 );
 ALTER TABLE r_class_student_grade ADD CONSTRAINT id_class_fkey FOREIGN KEY (id_class) REFERENCES t_class(id);
-ALTER TABLE r_class_student_grade ADD CONSTRAINT id_student_fkey FOREIGN KEY (id_student) REFERENCES m_user(id);
+ALTER TABLE r_class_student_grade ADD CONSTRAINT id_student_fkey FOREIGN KEY (id_class_student) REFERENCES t_class_student(id);
 ALTER TABLE r_class_student_grade ADD CONSTRAINT id_grade_composition_fkey FOREIGN KEY (id_grade_composition) REFERENCES t_grade_composition(id);
 
 /*============================== INSERT DATA FOR DATABASE ==============================*/
@@ -105,78 +120,33 @@ VALUES
     , ('student6', '$2b$10$.URsBQWkf4hAGOnQWqRduOxWg6on0St2XRZJ7o54.LGsEN.DaT/sO', 'student6@email.com', (SELECT id FROM m_role WHERE role_name = 'Student'), 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
     , ('student7', '$2b$10$.URsBQWkf4hAGOnQWqRduOxWg6on0St2XRZJ7o54.LGsEN.DaT/sO', 'student7@email.com', (SELECT id FROM m_role WHERE role_name = 'Student'), 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP);
 
-INSERT INTO t_class (class_name, class_description, grade_scale, created_user, created_date, last_upd_user, last_upd_date)
-VALUES 
-    ('Class 1', 'Description for Class 1', 100, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , ('Class 2', 'Description for Class 2', 100, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , ('Class 3', 'Description for Class 3', 100, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP);
+ALTER TABLE t_class ADD COLUMN is_students_complete boolean default false;
+ALTER TABLE t_class ADD COLUMN is_grade_structure_complete boolean default false;
+ALTER TABLE t_class ADD COLUMN is_grade_board_complete boolean default false;
+ALTER TABLE t_class ADD COLUMN invitation_code character varying(255);
+ALTER TABLE t_class ADD COLUMN is_active boolean default true;
 
-INSERT INTO r_class_user (id_class, id_user, is_owner)
-VALUES
-    (1, (SELECT id FROM m_user WHERE username = 'teacher1'), true)
-    , (1, (SELECT id FROM m_user WHERE username = 'student1'), false)
-    , (1, (SELECT id FROM m_user WHERE username = 'student2'), false)
-    , (1, (SELECT id FROM m_user WHERE username = 'student3'), false)
-    , (1, (SELECT id FROM m_user WHERE username = 'student4'), false)
-    , (2, (SELECT id FROM m_user WHERE username = 'teacher2'), true)
-    , (2, (SELECT id FROM m_user WHERE username = 'student5'), false)
-    , (2, (SELECT id FROM m_user WHERE username = 'student6'), false)
-    , (2, (SELECT id FROM m_user WHERE username = 'student7'), false)
-    , (3, (SELECT id FROM m_user WHERE username = 'teacher3'), true)
-    , (3, (SELECT id FROM m_user WHERE username = 'student3'), false)
-    , (3, (SELECT id FROM m_user WHERE username = 'student4'), false)
-    , (3, (SELECT id FROM m_user WHERE username = 'student5'), false)
-    , (3, (SELECT id FROM m_user WHERE username = 'student6'), false);
+ALTER TABLE t_class_student ADD COLUMN is_mapped boolean default false;
+ALTER TABLE t_class_student ADD COLUMN id_user_mapped integer;
 
-INSERT INTO t_grade_composition (id_class, grade_name, grade_percent, created_user, created_date, last_upd_user, last_upd_date)
-VALUES (1, 'Assignment', 20, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , (1, 'Midterm', 30, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , (1, 'Final', 50, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , (2, 'Assignment', 20, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , (2, 'Midterm', 30, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , (2, 'Final', 50, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , (3, 'Assignment', 20, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , (3, 'Midterm', 30, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP)
-    , (3, 'Final', 50, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS t_grade_review(
+    id SERIAL
+    , id_class integer
+    , id_class_student integer
+    , id_grade_composition integer
+    , review_title character varying(255)
+    , current_grade numeric(20, 5)
+    , student_expectation_grade numeric(20, 5)
+    , updated_grade numeric(20, 5)
+    , student_explanation text
+    , is_completed boolean default false
+    , PRIMARY KEY (id)
+);
 
-INSERT INTO r_class_student_grade (id_class, id_student, id_grade_composition, grade)
-VALUES (1, (SELECT id FROM m_user WHERE username = 'student1'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student1'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student1'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student2'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student2'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student2'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student3'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student3'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student3'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student4'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student4'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 1), 0)
-    , (1, (SELECT id FROM m_user WHERE username = 'student4'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 1), 0)
-    , (2, (SELECT id FROM m_user WHERE username = 'student5'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 2), 0)
-    , (2, (SELECT id FROM m_user WHERE username = 'student5'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 2), 0)
-    , (2, (SELECT id FROM m_user WHERE username = 'student5'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 2), 0)
-    , (2, (SELECT id FROM m_user WHERE username = 'student6'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 2), 0)
-    , (2, (SELECT id FROM m_user WHERE username = 'student6'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 2), 0)
-    , (2, (SELECT id FROM m_user WHERE username = 'student6'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 2), 0)
-    , (2, (SELECT id FROM m_user WHERE username = 'student7'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 2), 0)
-    , (2, (SELECT id FROM m_user WHERE username = 'student7'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 2), 0)
-    , (2, (SELECT id FROM m_user WHERE username = 'student7'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 2), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student3'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student3'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student3'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student4'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student4'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student4'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student5'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student5'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student5'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student6'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Assignment' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student6'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Midterm' AND id_class = 3), 0)
-    , (3, (SELECT id FROM m_user WHERE username = 'student6'), (SELECT id FROM t_grade_composition WHERE grade_name = 'Final' AND id_class = 3), 0);
-
-UPDATE t_class SET created_user = (SELECT id FROM m_user WHERE username = 'teacher1'), last_upd_user = (SELECT id FROM m_user WHERE username = 'teacher1') WHERE id = 1;
-UPDATE t_class SET created_user = (SELECT id FROM m_user WHERE username = 'teacher2'), last_upd_user = (SELECT id FROM m_user WHERE username = 'teacher2') WHERE id = 2;
-UPDATE t_class SET created_user = (SELECT id FROM m_user WHERE username = 'teacher3'), last_upd_user = (SELECT id FROM m_user WHERE username = 'teacher3') WHERE id = 3;
-
-ALTER TABLE m_user ADD COLUMN is_active boolean default true;
-ALTER TABLE m_user ADD COLUMN student_id character varying(255) UNIQUE;
+CREATE TABLE IF NOT EXISTS t_grade_review_comment(
+    id SERIAL
+    , id_grade_review integer
+    , id_user integer
+    , comment_content text
+    , PRIMARY KEY (id)
+);
