@@ -5,7 +5,11 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
+    watch: {
+      usePolling: true,
+    },
     host: true,
-    //port: 5173, When not running with docker compose, this is the port which will be used in docker
+    strictPort: true,
+    port: 5173,
   },
 });
