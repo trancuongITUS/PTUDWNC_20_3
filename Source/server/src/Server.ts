@@ -33,7 +33,7 @@ export default class Server {
         app.use('/auth', authRoutes);
         /** Config user-routes */
         app.use('/users', userRoutes);
-        /** Config user-routes */
+        /** Config class-routes */
         app.use('/class', classRoutes);
     }
 

@@ -119,6 +119,7 @@ export default class AuthController {
                     username: user?.username,
                     email: user?.email,
                     fullname: user?.fullname,
+                    idRole: user?.idRole,
                 }
             });
         } catch (error) {

@@ -3,6 +3,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { MUser, MUserId } from './MUser';
 import type { RClassStudentGrade, RClassStudentGradeId } from './RClassStudentGrade';
 import type { RClassUser, RClassUserId } from './RClassUser';
+import type { TClassStudent, TClassStudentId } from './TClassStudent';
 import type { TGradeComposition, TGradeCompositionId } from './TGradeComposition';
 
 export interface TClassAttributes {
@@ -15,11 +16,17 @@ export interface TClassAttributes {
     createdUser?: number;
     lastUpdDate?: Date;
     lastUpdUser?: number;
+    invitationLinkCode?: string;
+    isStudentsComplete?: boolean;
+    isGradeStructureComplete?: boolean;
+    isGradeBoardComplete?: boolean;
+    invitationCode?: string;
+    isActive?: boolean;
 }
 
 export type TClassPk = "id";
 export type TClassId = TClass[TClassPk];
-export type TClassOptionalAttributes = "id" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
+export type TClassOptionalAttributes = "id" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser" | "invitationLinkCode" | "isStudentsComplete" | "isGradeStructureComplete" | "isGradeBoardComplete" | "invitationCode" | "isActive";
 export type TClassCreationAttributes = Optional<TClassAttributes, TClassOptionalAttributes>;
 
 export class TClass extends Model<TClassAttributes, TClassCreationAttributes> implements TClassAttributes {
@@ -32,6 +39,12 @@ export class TClass extends Model<TClassAttributes, TClassCreationAttributes> im
     createdUser?: number;
     lastUpdDate?: Date;
     lastUpdUser?: number;
+    invitationLinkCode?: string;
+    isStudentsComplete?: boolean;
+    isGradeStructureComplete?: boolean;
+    isGradeBoardComplete?: boolean;
+    invitationCode?: string;
+    isActive?: boolean;
 
     // TClass belongsTo MUser via createdUser
     createdUserMUser!: MUser;
@@ -79,6 +92,18 @@ export class TClass extends Model<TClassAttributes, TClassCreationAttributes> im
     hasRClassUser!: Sequelize.HasManyHasAssociationMixin<RClassUser, RClassUserId>;
     hasRClassUsers!: Sequelize.HasManyHasAssociationsMixin<RClassUser, RClassUserId>;
     countRClassUsers!: Sequelize.HasManyCountAssociationsMixin;
+    // TClass hasMany TClassStudent via idClass
+    tClassStudents!: TClassStudent[];
+    getTClassStudents!: Sequelize.HasManyGetAssociationsMixin<TClassStudent>;
+    setTClassStudents!: Sequelize.HasManySetAssociationsMixin<TClassStudent, TClassStudentId>;
+    addTClassStudent!: Sequelize.HasManyAddAssociationMixin<TClassStudent, TClassStudentId>;
+    addTClassStudents!: Sequelize.HasManyAddAssociationsMixin<TClassStudent, TClassStudentId>;
+    createTClassStudent!: Sequelize.HasManyCreateAssociationMixin<TClassStudent>;
+    removeTClassStudent!: Sequelize.HasManyRemoveAssociationMixin<TClassStudent, TClassStudentId>;
+    removeTClassStudents!: Sequelize.HasManyRemoveAssociationsMixin<TClassStudent, TClassStudentId>;
+    hasTClassStudent!: Sequelize.HasManyHasAssociationMixin<TClassStudent, TClassStudentId>;
+    hasTClassStudents!: Sequelize.HasManyHasAssociationsMixin<TClassStudent, TClassStudentId>;
+    countTClassStudents!: Sequelize.HasManyCountAssociationsMixin;
     // TClass hasMany TGradeComposition via idClass
     tGradeCompositions!: TGradeComposition[];
     getTGradeCompositions!: Sequelize.HasManyGetAssociationsMixin<TGradeComposition>;
@@ -148,6 +173,40 @@ export class TClass extends Model<TClassAttributes, TClassCreationAttributes> im
                 key: 'id'
             },
             field: 'last_upd_user'
+        },
+        invitationLinkCode: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            field: 'invitation_link_code'
+        },
+        isStudentsComplete: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_students_complete'
+        },
+        isGradeStructureComplete: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_grade_structure_complete'
+        },
+        isGradeBoardComplete: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_grade_board_complete'
+        },
+        invitationCode: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            field: 'invitation_code'
+        },
+        isActive: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: true,
+            field: 'is_active'
         }
     }, {
         tableName: 't_class',

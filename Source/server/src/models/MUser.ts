@@ -1,7 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { MRole, MRoleId } from './MRole';
-import type { RClassStudentGrade, RClassStudentGradeId } from './RClassStudentGrade';
 import type { RClassUser, RClassUserId } from './RClassUser';
 import type { TClass, TClassId } from './TClass';
 import type { TGradeComposition, TGradeCompositionId } from './TGradeComposition';
@@ -17,19 +16,19 @@ export interface MUserAttributes {
     isGoogle?: boolean;
     isVerifiedEmail?: boolean;
     codeVerifyEmail?: string;
+    isActive?: boolean;
+    studentId?: string | null;
     idRole?: number;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
     lastUpdDate?: Date;
     lastUpdUser?: number;
-    isActive?: boolean;
-    studentId?: string | null;
 }
 
 export type MUserPk = "id";
 export type MUserId = MUser[MUserPk];
-export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "refreshToken" | "expiredRefreshToken" | "isGoogle" | "isVerifiedEmail" | "codeVerifyEmail" | "idRole" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser" | "isActive" | "studentId";
+export type MUserOptionalAttributes = "id" | "pwdHash" | "fullname" | "refreshToken" | "expiredRefreshToken" | "isGoogle" | "isVerifiedEmail" | "codeVerifyEmail" | "isActive" | "studentId" | "idRole" | "recordVersion" | "createdDate" | "createdUser" | "lastUpdDate" | "lastUpdUser";
 export type MUserCreationAttributes = Optional<MUserAttributes, MUserOptionalAttributes>;
 
 export class MUser extends Model<MUserAttributes, MUserCreationAttributes> implements MUserAttributes {
@@ -43,14 +42,14 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
     isGoogle?: boolean;
     isVerifiedEmail?: boolean;
     codeVerifyEmail?: string;
+    isActive?: boolean;
+    studentId?: string | null;
     idRole?: number;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
     lastUpdDate?: Date;
     lastUpdUser?: number;
-    isActive?: boolean;
-    studentId?: string | null;
 
     // MUser belongsTo MRole via idRole
     idRoleMRole!: MRole;
@@ -67,18 +66,6 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
     getLastUpdUserMUser!: Sequelize.BelongsToGetAssociationMixin<MUser>;
     setLastUpdUserMUser!: Sequelize.BelongsToSetAssociationMixin<MUser, MUserId>;
     createLastUpdUserMUser!: Sequelize.BelongsToCreateAssociationMixin<MUser>;
-    // MUser hasMany RClassStudentGrade via idStudent
-    rClassStudentGrades!: RClassStudentGrade[];
-    getRClassStudentGrades!: Sequelize.HasManyGetAssociationsMixin<RClassStudentGrade>;
-    setRClassStudentGrades!: Sequelize.HasManySetAssociationsMixin<RClassStudentGrade, RClassStudentGradeId>;
-    addRClassStudentGrade!: Sequelize.HasManyAddAssociationMixin<RClassStudentGrade, RClassStudentGradeId>;
-    addRClassStudentGrades!: Sequelize.HasManyAddAssociationsMixin<RClassStudentGrade, RClassStudentGradeId>;
-    createRClassStudentGrade!: Sequelize.HasManyCreateAssociationMixin<RClassStudentGrade>;
-    removeRClassStudentGrade!: Sequelize.HasManyRemoveAssociationMixin<RClassStudentGrade, RClassStudentGradeId>;
-    removeRClassStudentGrades!: Sequelize.HasManyRemoveAssociationsMixin<RClassStudentGrade, RClassStudentGradeId>;
-    hasRClassStudentGrade!: Sequelize.HasManyHasAssociationMixin<RClassStudentGrade, RClassStudentGradeId>;
-    hasRClassStudentGrades!: Sequelize.HasManyHasAssociationsMixin<RClassStudentGrade, RClassStudentGradeId>;
-    countRClassStudentGrades!: Sequelize.HasManyCountAssociationsMixin;
     // MUser hasMany RClassUser via idUser
     rClassUsers!: RClassUser[];
     getRClassUsers!: Sequelize.HasManyGetAssociationsMixin<RClassUser>;
@@ -206,6 +193,18 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
             allowNull: true,
             field: 'code_verify_email'
         },
+        isActive: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: true,
+            field: 'is_active'
+        },
+        studentId: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+            unique: "m_user_student_id_key",
+            field: 'student_id'
+        },
         idRole: {
             type: DataTypes.INTEGER,
             allowNull: true,
@@ -248,18 +247,6 @@ export class MUser extends Model<MUserAttributes, MUserCreationAttributes> imple
                 key: 'id'
             },
             field: 'last_upd_user'
-        },
-        isActive: {
-            type: DataTypes.BOOLEAN,
-            allowNull: true,
-            defaultValue: true,
-            field: 'is_active'
-        },
-        studentId: {
-            type: DataTypes.STRING(255),
-            allowNull: true,
-            unique: "m_user_student_id_key",
-            field: 'student_id'
         }
     }, {
         tableName: 'm_user',

@@ -9,8 +9,14 @@ import { RClassUser as _RClassUser } from "./RClassUser";
 import type { RClassUserAttributes, RClassUserCreationAttributes } from "./RClassUser";
 import { TClass as _TClass } from "./TClass";
 import type { TClassAttributes, TClassCreationAttributes } from "./TClass";
+import { TClassStudent as _TClassStudent } from "./TClassStudent";
+import type { TClassStudentAttributes, TClassStudentCreationAttributes } from "./TClassStudent";
 import { TGradeComposition as _TGradeComposition } from "./TGradeComposition";
 import type { TGradeCompositionAttributes, TGradeCompositionCreationAttributes } from "./TGradeComposition";
+import { TGradeReview as _TGradeReview } from "./TGradeReview";
+import type { TGradeReviewAttributes, TGradeReviewCreationAttributes } from "./TGradeReview";
+import { TGradeReviewComment as _TGradeReviewComment } from "./TGradeReviewComment";
+import type { TGradeReviewCommentAttributes, TGradeReviewCommentCreationAttributes } from "./TGradeReviewComment";
 
 export {
     _MRole as MRole,
@@ -18,7 +24,10 @@ export {
     _RClassStudentGrade as RClassStudentGrade,
     _RClassUser as RClassUser,
     _TClass as TClass,
+    _TClassStudent as TClassStudent,
     _TGradeComposition as TGradeComposition,
+    _TGradeReview as TGradeReview,
+    _TGradeReviewComment as TGradeReviewComment,
 };
 
 export type {
@@ -32,8 +41,14 @@ export type {
     RClassUserCreationAttributes,
     TClassAttributes,
     TClassCreationAttributes,
+    TClassStudentAttributes,
+    TClassStudentCreationAttributes,
     TGradeCompositionAttributes,
     TGradeCompositionCreationAttributes,
+    TGradeReviewAttributes,
+    TGradeReviewCreationAttributes,
+    TGradeReviewCommentAttributes,
+    TGradeReviewCommentCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -42,7 +57,10 @@ export function initModels(sequelize: Sequelize) {
     const RClassStudentGrade = _RClassStudentGrade.initModel(sequelize);
     const RClassUser = _RClassUser.initModel(sequelize);
     const TClass = _TClass.initModel(sequelize);
+    const TClassStudent = _TClassStudent.initModel(sequelize);
     const TGradeComposition = _TGradeComposition.initModel(sequelize);
+    const TGradeReview = _TGradeReview.initModel(sequelize);
+    const TGradeReviewComment = _TGradeReviewComment.initModel(sequelize);
 
     MUser.belongsToMany(TClass, { as: 'idClassTClasses', through: RClassUser, foreignKey: "idUser", otherKey: "idClass" });
     TClass.belongsToMany(MUser, { as: 'idUserMUsers', through: RClassUser, foreignKey: "idClass", otherKey: "idUser" });
@@ -52,8 +70,6 @@ export function initModels(sequelize: Sequelize) {
     MUser.hasMany(MUser, { as: "mUsers", foreignKey: "createdUser"});
     MUser.belongsTo(MUser, { as: "lastUpdUserMUser", foreignKey: "lastUpdUser"});
     MUser.hasMany(MUser, { as: "lastUpdUserMUsers", foreignKey: "lastUpdUser"});
-    RClassStudentGrade.belongsTo(MUser, { as: "idStudentMUser", foreignKey: "idStudent"});
-    MUser.hasMany(RClassStudentGrade, { as: "rClassStudentGrades", foreignKey: "idStudent"});
     RClassUser.belongsTo(MUser, { as: "idUserMUser", foreignKey: "idUser"});
     MUser.hasMany(RClassUser, { as: "rClassUsers", foreignKey: "idUser"});
     TClass.belongsTo(MUser, { as: "createdUserMUser", foreignKey: "createdUser"});
@@ -68,8 +84,12 @@ export function initModels(sequelize: Sequelize) {
     TClass.hasMany(RClassStudentGrade, { as: "rClassStudentGrades", foreignKey: "idClass"});
     RClassUser.belongsTo(TClass, { as: "idClassTClass", foreignKey: "idClass"});
     TClass.hasMany(RClassUser, { as: "rClassUsers", foreignKey: "idClass"});
+    TClassStudent.belongsTo(TClass, { as: "idClassTClass", foreignKey: "idClass"});
+    TClass.hasMany(TClassStudent, { as: "tClassStudents", foreignKey: "idClass"});
     TGradeComposition.belongsTo(TClass, { as: "idClassTClass", foreignKey: "idClass"});
     TClass.hasMany(TGradeComposition, { as: "tGradeCompositions", foreignKey: "idClass"});
+    RClassStudentGrade.belongsTo(TClassStudent, { as: "idClassStudentTClassStudent", foreignKey: "idClassStudent"});
+    TClassStudent.hasMany(RClassStudentGrade, { as: "rClassStudentGrades", foreignKey: "idClassStudent"});
     RClassStudentGrade.belongsTo(TGradeComposition, { as: "idGradeCompositionTGradeComposition", foreignKey: "idGradeComposition"});
     TGradeComposition.hasMany(RClassStudentGrade, { as: "rClassStudentGrades", foreignKey: "idGradeComposition"});
 
@@ -79,6 +99,9 @@ export function initModels(sequelize: Sequelize) {
         RClassStudentGrade: RClassStudentGrade,
         RClassUser: RClassUser,
         TClass: TClass,
+        TClassStudent: TClassStudent,
         TGradeComposition: TGradeComposition,
+        TGradeReview: TGradeReview,
+        TGradeReviewComment: TGradeReviewComment,
     };
 }

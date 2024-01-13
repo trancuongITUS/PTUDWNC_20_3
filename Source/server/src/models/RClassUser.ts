@@ -7,17 +7,19 @@ export interface RClassUserAttributes {
     idClass: number;
     idUser: number;
     isOwner?: boolean;
+    isStudentMapped?: boolean;
 }
 
 export type RClassUserPk = "idClass" | "idUser";
 export type RClassUserId = RClassUser[RClassUserPk];
-export type RClassUserOptionalAttributes = "isOwner";
+export type RClassUserOptionalAttributes = "isOwner" | "isStudentMapped";
 export type RClassUserCreationAttributes = Optional<RClassUserAttributes, RClassUserOptionalAttributes>;
 
 export class RClassUser extends Model<RClassUserAttributes, RClassUserCreationAttributes> implements RClassUserAttributes {
     idClass!: number;
     idUser!: number;
     isOwner?: boolean;
+    isStudentMapped?: boolean;
 
     // RClassUser belongsTo MUser via idUser
     idUserMUser!: MUser;
@@ -57,6 +59,12 @@ export class RClassUser extends Model<RClassUserAttributes, RClassUserCreationAt
             allowNull: true,
             defaultValue: false,
             field: 'is_owner'
+        },
+        isStudentMapped: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false,
+            field: 'is_student_mapped'
         }
     }, {
         tableName: 'r_class_user',

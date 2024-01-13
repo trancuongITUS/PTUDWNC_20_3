@@ -13,7 +13,10 @@ const Loadable = (Component: React.ComponentType<any>) => (props: JSX.IntrinsicA
 );
 
 const DefaultLayout = lazy(() => import('../layout/DefaultLayout'));
-const ECommerce = Loadable(lazy(() => import('../pages/Dashboard/ECommerce')));
+const Dashboard = Loadable(lazy(() => import('../pages/Dashboard/Dashboard')));
+const JoinedClasses = Loadable(lazy(() => import('../pages/Dashboard/JoinedClasses')));
+const CreateClass = Loadable(lazy(() => import('../pages/Dashboard/CreateClass')));
+const ClassDetail = Loadable(lazy(() => import('../pages/Dashboard/ClassDetail')));
 const Calendar = Loadable(lazy(() => import('../pages/Calendar')));
 const Chart = Loadable(lazy(() => import('../pages/Chart')));
 const FormElements = Loadable(lazy(() => import('../pages/Form/FormElements')));
@@ -27,6 +30,12 @@ const Buttons = Loadable(lazy(() => import('../pages/UiElements/Buttons')));
 const Users = Loadable(lazy(() => import('../pages/Admin/Users')));
 const Classes = Loadable(lazy(() => import('../pages/Admin/Classes')));
 const Students = Loadable(lazy(() => import('../pages/Admin/Students')));
+const GradeStructureChart = Loadable(lazy(() => import('../pages/Dashboard/GradeStructureChart')));
+const MemberTable = Loadable(lazy(() => import('../pages/Dashboard/MemberTable')));
+const ClassDashboard = Loadable(lazy(() => import('../pages/Dashboard/ClassDashboard')));
+const JoinClassByLinkCallback = Loadable(lazy(() => import('../pages/Dashboard/JoinClassByLinkCallback')));
+const GradeBoard = Loadable(lazy(() => import('../pages/Dashboard/GradeBoard')));
+const GradeReview = Loadable(lazy(() => import('../pages/Dashboard/GradeReview')));
 
 const authRoutes: RouteObject = {
   path: '*',
@@ -44,16 +53,6 @@ const authRoutes: RouteObject = {
       path: 'forgot-password',
       element: <ForgotPassword />,
     },
-    // {
-    //   path: 'verifyemail',
-    //   element: <EmailVerificationPage />,
-    //   children: [
-    //     {
-    //       path: ':verificationCode',
-    //       element: <EmailVerificationPage />,
-    //     },
-    //   ],
-    // },
   ],
 };
 
@@ -63,7 +62,19 @@ const coreRoutes: RouteObject = {
   children: [
     {
       index: true,
-      element: <ECommerce />,
+      element: <Dashboard />,
+    },
+    {
+      path: 'joined-classes',
+      element: <JoinedClasses />,
+    },
+    {
+      path: 'create-class',
+      element: <CreateClass />,
+    },
+    {
+      path: 'class/:id',
+      element: <ClassDetail />,
     },
     {
       path: 'calendar',
@@ -116,6 +127,30 @@ const coreRoutes: RouteObject = {
     {
       path: 'admin/students',
       element: <Students />,
+    },
+    {
+      path: 'class/:id/grade-stucture',
+      element: <GradeStructureChart />,
+    },
+    {
+      path: 'class/:id/members',
+      element: <MemberTable />,
+    },
+    {
+      path: 'class/:id/dashboard',
+      element: <ClassDashboard />,
+    },
+    {
+      path: 'join-class-callback/:invitationLinkCode',
+      element: <JoinClassByLinkCallback />,
+    },
+    {
+      path: 'class/:id/grade-board',
+      element: <GradeBoard />,
+    },
+    {
+      path: 'class/grade-review/:idClass/:idClassStudent',
+      element: <GradeReview />,
     }
   ],
 };
