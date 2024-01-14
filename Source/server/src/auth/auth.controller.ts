@@ -37,7 +37,7 @@ export default class AuthController {
                 return;
             }
 
-            const LINK = `http://localhost:8080/auth/verify-email/${codeVerifyEmail}`;
+            const LINK = `${process.env.SERVER_URL}/auth/verify-email/${codeVerifyEmail}`;
             const MAIL_OPTIONS = {
                 from: '',
                 to: EMAIL,
@@ -187,7 +187,7 @@ export default class AuthController {
             const user = await AuthService.getUserByEmail(EMAIL);
             if (EMAIL === user?.email) {
                 await AuthService.verifyEmail(user?.id!);
-                res.redirect('http://127.0.0.1:5173/');
+                res.redirect(process.env.CLIENT_URL || 'http://127.0.0.1:5173/');
             }
         } catch (error) {
             console.log(error);

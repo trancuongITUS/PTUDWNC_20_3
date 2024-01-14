@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useStateContext } from "../../context";
+import api from "../../api";
 
 const CreateClass = () => {
     const navigate = useNavigate();
@@ -57,11 +57,6 @@ const CreateClass = () => {
         formData.append('description', description);
         formData.append('file', file);
         formData.append('owner', user?.id as string)
-
-        const api = axios.create({
-            baseURL: 'http://127.0.0.1:8080/',
-            withCredentials: true,
-        });
         api.post('/class/create-class', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -77,10 +72,6 @@ const CreateClass = () => {
     }
 
     const handleDownloadTemplate = async () => {
-        const api = axios.create({
-            baseURL: 'http://127.0.0.1:8080/',
-            withCredentials: true,
-        });
         const response = await api.get('class/create/download-student-for-class-template', {
             responseType: 'blob',
         });

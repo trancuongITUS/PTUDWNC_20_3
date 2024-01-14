@@ -1,7 +1,7 @@
 import { Router } from "express";
 import AuthMiddlewares from "~/auth/auth.middlewares";
 import UserController from "~/controllers/user.controller";
-import uploader from "~/multer/multer.config";
+import uploader from '~/multer.config';
 
 class UserRoutes {
     router = Router();

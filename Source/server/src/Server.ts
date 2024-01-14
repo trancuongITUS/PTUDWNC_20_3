@@ -30,11 +30,11 @@ export default class Server {
 
     private configRoutes(app: Application) {
         /** Config auth-routes */
-        app.use('/auth', authRoutes);
+        app.use('/api/v1/auth', authRoutes);
         /** Config user-routes */
-        app.use('/users', userRoutes);
+        app.use('/api/v1/users', userRoutes);
         /** Config class-routes */
-        app.use('/class', classRoutes);
+        app.use('/api/v1/class', classRoutes);
     }
 
     private async connectDatabase(): Promise<void> {

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import AuthMiddlewares from "~/auth/auth.middlewares";
 import ClassController from "~/controllers/class.controller";
-import uploader from "~/multer/multer.config";
+import uploader from "~/multer.config";
 
 class ClassRoutes {
     router = Router();
@@ -24,7 +24,7 @@ class ClassRoutes {
 
         this.router.get('/join-class/:invitationLinkCode', (req: Request, res: Response) => {
             const invitationLinkCode = req.params.invitationLinkCode;
-            res.redirect(`http://127.0.0.1:5173/join-class-callback/${invitationLinkCode}`);
+            res.redirect(`${process.env.CLIENT_URL}/join-class-callback/${invitationLinkCode}`);
         });
         this.router.post('/join-class-by-link', this.authMiddlewares.isAuth, this.classController.joinClassByLink);
         this.router.post('/join-class-by-code', this.authMiddlewares.isAuth, this.classController.joinClassByCode);

@@ -8,7 +8,7 @@ COPY package.json /usr/src/app/
 # RUN apk --no-cache add --virtual builds-deps build-base python3x
 RUN npm install
 RUN npm rebuild bcrypt --build-from-source
-RUN npm cache clean --force
+# RUN npm cache clean --force
 
 COPY . /usr/src/app
 RUN npm run build

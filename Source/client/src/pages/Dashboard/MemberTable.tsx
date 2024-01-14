@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getIsStudentsFinalized, getMembersByClassId, markStudentsFinalized } from "../../services/classApi";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useStateContext } from "../../context";
+import api from "../../api";
 
 const MemberTable = () => {
     const { id } = useParams<{ id: string }>();
@@ -43,10 +43,6 @@ const MemberTable = () => {
     }
 
     const handleDownloadStudentTemplate = async () => {
-        const api = axios.create({
-            baseURL: 'http://127.0.0.1:8080/',
-            withCredentials: true,
-        });
         const response = await api.get('class/create/download-student-for-class-template', {
             responseType: 'blob',
         });
@@ -69,10 +65,6 @@ const MemberTable = () => {
         const formData = new FormData();
         formData.append('file', selecttedFile);
         formData.append('classId', Number(id).toString());
-        const api = axios.create({
-            baseURL: 'http://127.0.0.1:8080/',
-            withCredentials: true,
-        });
 
         await api.post('class/upload-students', formData, {
             headers: {

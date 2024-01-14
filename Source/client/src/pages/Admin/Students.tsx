@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import { getAllStudents } from "../../services/userApi";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../../api";
 
 const Students = () => {
     const [students, setStudents] = useState([]);
@@ -15,10 +15,6 @@ const Students = () => {
     }, []);
 
     const handleDownloadTemplate = async () => {
-        const api = axios.create({
-            baseURL: 'http://127.0.0.1:8080/',
-            withCredentials: true,
-        });
         const response = await api.get('users/admin/download-mapping-id-studentid-template', {
             responseType: 'blob',
         });
@@ -41,10 +37,6 @@ const Students = () => {
 
         const formData = new FormData();
         formData.append('file', selecttedFile);
-        const api = axios.create({
-            baseURL: 'http://127.0.0.1:8080/',
-            withCredentials: true,
-        });
 
         await api.post('users/admin/upload-mapping-id-studentid', formData, {
             headers: {
