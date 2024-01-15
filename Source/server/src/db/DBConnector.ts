@@ -6,8 +6,8 @@ export default class DBConnector {
     private sequelize: Sequelize;
 
     private constructor() {
-        this.sequelize = new Sequelize('ptudwnc', 'postgres', '123456?a', {
-            host: 'localhost',
+        this.sequelize = new Sequelize(process.env.DB_NAME || 'ptudwnc', process.env.DB_USER || 'postgres', process.env.DB_PASSWORD || '123456?a', {
+            host: process.env.DB_HOST || 'localhost',
             dialect: 'postgres',
             
             pool: {

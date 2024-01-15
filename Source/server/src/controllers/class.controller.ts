@@ -230,7 +230,7 @@ export default class ClassController {
         if (Util.isNullOrUndefined(CLASS_BY_ID)) {
             return res.status(409).send({success: false, message: "Class not exist."});
         }
-        const LINK = `http://localhost:8080/class/join-class/${CLASS_BY_ID.invitationLinkCode}`;
+        const LINK = `${process.env.SERVER_URL}/class/join-class/${CLASS_BY_ID.invitationLinkCode}`;
         const MAIL_OPTIONS = {
             from: '',
             to: EMAIL,

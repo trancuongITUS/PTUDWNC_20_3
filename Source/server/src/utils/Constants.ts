@@ -6,7 +6,7 @@ dotenv.config();
 
 export default class Constants {
     static readonly CORS_OPTIONS: CorsOptions = {
-        origin: 'http://127.0.0.1:5173',
+        origin: process.env.CLIENT_URL || 'http://127.0.0.1:5173',
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
         preflightContinue: false,
         optionsSuccessStatus: 204,

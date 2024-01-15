@@ -1,0 +1,34 @@
+name: Server CI
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches: [ 'main' ]
+
+jobs:
+  docker:
+    name: Docker Server Build and Push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN_TWO }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push server
+        uses: docker/build-push-action@v3
+        with:
+          context: ./Source/server
+          file: ./Source/server/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/ptudwnc_20_3_back-end:latest

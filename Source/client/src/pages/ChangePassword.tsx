@@ -6,12 +6,12 @@ import Breadcrumb from '../components/Breadcrumb';
 import TextField from '../components/form/TextField';
 import { ChangePasswordInput, changePasswordSchema } from '../models/ChangePassword';
 import { changePasswordFn } from '../services/authApi';
-import SubmitButton from './UiElements/SubmitButton';
+import SubmitButton from '../components/form/SubmitButton';
 import { useNavigate } from 'react-router-dom';
 
 const ChangePassword = () => {
   const navigate = useNavigate();
-  
+
   const {
     control,
     formState: { errors },
@@ -57,7 +57,7 @@ const ChangePassword = () => {
           <div className="col-span-5 xl:col-span-5">
             {/* <!-- orm --> */}
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-              <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
+              <form>
                 <div className="p-6.5">
                   <TextField
                     control={control}
@@ -91,7 +91,11 @@ const ChangePassword = () => {
 
                   <br />
 
-                  <SubmitButton label="Change password" isPending={isPending} />
+                  <SubmitButton
+                    label="Change password"
+                    isPending={isPending}
+                    onClick={handleSubmit(onSubmitHandler, onErrorHandler)}
+                  />
                 </div>
               </form>
             </div>

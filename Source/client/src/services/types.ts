@@ -17,3 +17,8 @@ export interface IGenericResponse {
   status?: string;
   user?: IUser;
 }
+
+export interface IUserResponse {
+  message: string;
+  result: IUser;
+}

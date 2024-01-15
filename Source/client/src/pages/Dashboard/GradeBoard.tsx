@@ -3,8 +3,8 @@ import { getGradeBoardByClassId, getGradeStructureByClassId, getIsGradeBoardFina
 import { ToastContainer, toast } from 'react-toastify';
 import { Link, useParams } from 'react-router-dom';
 import { FaCheck, FaCommentDots, FaPencilAlt } from 'react-icons/fa';
-import axios from 'axios';
 import { useStateContext } from '../../context';
+import api from '../../api';
 
 const GradeBoard = () => {
     const [isFinalized, setIsFinalized] = useState<any>(null);
@@ -155,10 +155,6 @@ const GradeBoard = () => {
             return;
         }
 
-        const api = axios.create({
-            baseURL: 'http://127.0.0.1:8080/',
-            withCredentials: true,
-        });
         const response = await api.get(`class/download-grade-of-assignment-template/${selectedTemplate}`, {
             responseType: 'blob',
         });
@@ -173,10 +169,6 @@ const GradeBoard = () => {
     }
 
     const handleDownloadGradeBoard = async () => {
-        const api = axios.create({
-            baseURL: 'http://127.0.0.1:8080/',
-            withCredentials: true,
-        });
         const response = await api.get(`class/download-grade-board`, {
             responseType: 'blob',
         });
@@ -199,10 +191,6 @@ const GradeBoard = () => {
         const formData = new FormData();
         formData.append('file', selecttedFile);
         formData.append('classId', Number(id).toString());
-        const api = axios.create({
-            baseURL: 'http://127.0.0.1:8080/',
-            withCredentials: true,
-        });
 
         await api.post('class/upload-grade-assignment-board', formData, {
             headers: {

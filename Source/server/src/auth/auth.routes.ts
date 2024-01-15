@@ -34,7 +34,7 @@ class AuthRoutes {
                         return next(err);
                     }
 
-                    return res.redirect(`http://127.0.0.1:5173/login?redirectAccount=${encodeURIComponent(user.dataValues.username)}`);
+                    return res.redirect(`${process.env.CLIENT_URL}/login?redirectAccount=${encodeURIComponent(user.dataValues.username)}`);
                 });
             })(req, res, next);
         });

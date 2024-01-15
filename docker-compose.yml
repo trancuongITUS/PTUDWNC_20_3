@@ -1,0 +1,19 @@
+version: "3"
+services:
+  back-end:
+    environment:
+      - SERVER_URL=http://127.0.0.1/api/v1
+    build: ./Source/server
+    container_name: "back-end"
+
+  front-end:
+    build: ./Source/client
+    container_name: "front-end"
+    depends_on:
+      - back-end
+  proxy:
+    build: ./nginx
+    container_name: "proxy"
+    restart: always
+    ports:
+      - "80:80"

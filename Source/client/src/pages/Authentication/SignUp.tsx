@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { signUpUserFn } from '../../services/authApi';
 import { toast } from 'react-toastify';
-import SubmitButton from '../UiElements/SubmitButton';
+import SubmitButton from '../../components/form/SubmitButton';
 import { FaRegUser } from 'react-icons/fa';
 import { MdDriveFileRenameOutline, MdOutlineEmail } from 'react-icons/md';
 import { RiLockPasswordLine } from 'react-icons/ri';
@@ -65,7 +65,7 @@ const SignUp = () => {
                 Sign Up to HCMUS
               </h2>
 
-              <form onSubmit={handleSubmit(onSubmitHandler, onErrorHandler)}>
+              <form>
                 <div className="flex justify-center">
                   <div className="flex-1">
                     <WrapperRadio
@@ -125,7 +125,13 @@ const SignUp = () => {
                   icon={<TbPasswordFingerprint />}
                 />
 
-                <SubmitButton label="Create account" isPending={isPending} />
+                <div className="mb-5">
+                  <SubmitButton
+                    label="Create account"
+                    isPending={isPending}
+                    onClick={handleSubmit(onSubmitHandler, onErrorHandler)}
+                  />
+                </div>
 
                 <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>
