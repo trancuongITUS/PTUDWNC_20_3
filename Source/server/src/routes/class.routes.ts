@@ -24,6 +24,7 @@ class ClassRoutes {
 
         this.router.get('/join-class/:invitationLinkCode', (req: Request, res: Response) => {
             const invitationLinkCode = req.params.invitationLinkCode;
+            console.log(invitationLinkCode)
             res.redirect(`${process.env.CLIENT_URL}/join-class-callback/${invitationLinkCode}`);
         });
         this.router.post('/join-class-by-link', this.authMiddlewares.isAuth, this.classController.joinClassByLink);

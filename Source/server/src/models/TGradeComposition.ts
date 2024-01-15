@@ -10,6 +10,7 @@ export interface TGradeCompositionAttributes {
     gradeName: string;
     gradeScale: number;
     gradePercent: number;
+    displayNo: number;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -28,6 +29,7 @@ export class TGradeComposition extends Model<TGradeCompositionAttributes, TGrade
     gradeName!: string;
     gradeScale!: number;
     gradePercent!: number;
+    displayNo!: number;
     recordVersion?: number;
     createdDate?: Date;
     createdUser?: number;
@@ -94,6 +96,12 @@ export class TGradeComposition extends Model<TGradeCompositionAttributes, TGrade
             type: DataTypes.INTEGER,
             allowNull: false,
             field: 'grade_percent'
+        },
+        displayNo: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            field: 'display_no'
         },
         recordVersion: {
             type: DataTypes.INTEGER,

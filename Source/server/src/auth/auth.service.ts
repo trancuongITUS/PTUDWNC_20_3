@@ -101,11 +101,11 @@ export default class AuthService {
         }
     }
 
-    public static async update(username: string, email: string, fullname: string): Promise<boolean> {
+    public static async update(username: string, email: string, fullname: string, studentId: string): Promise<boolean> {
         let isSuccess: boolean = false;
 
         try {
-            await MUserDao.update(username, email, fullname);
+            await MUserDao.update(username, email, fullname, studentId);
             isSuccess = true;
         } catch (error) {
 

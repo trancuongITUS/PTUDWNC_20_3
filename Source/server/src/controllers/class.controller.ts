@@ -378,6 +378,31 @@ export default class ClassController {
     }
 
     async downloadGradeBoard(req: Request, res: Response) {
+        const GRADE_BOARD: any = req.query.gradeBoard;
+        const GRADE_STRUCTURE: any = req.query.gradeStructure;
+
+        const workbook = new ExcelJS.Workbook();
+        
+        await workbook.xlsx.readFile('./src/templates/GradeBoardExport.xlsx');
+        const worksheet = workbook.getWorksheet(1);
+
+        GRADE_STRUCTURE.forEach((grade: any, index: number) => {
+            const column = String.fromCharCode(68 + index);
+            worksheet!.getCell(`${column}1`).value = grade.grade_name;
+        });
+
+        GRADE_BOARD.forEach((grade: any, indexRow: number) => {
+            console.log(grade.GRADE_STRUCTURE)
+            worksheet!.getCell(`A${indexRow + 2}`).value = grade.student_id;
+            worksheet!.getCell(`B${indexRow + 2}`).value = grade.fullname;
+            grade.GRADE_STRUCTURE.forEach((element: any, index: number) => {
+                const column = String.fromCharCode(68 + index);
+                worksheet!.getCell(`${column}${indexRow + 2}`).value = element.grade;
+            });
+        });
+
+        await workbook.xlsx.writeFile('./src/templates/GradeBoardExport.xlsx');
+
         res.download('./src/templates/GradeBoardExport.xlsx');
     }
 
@@ -485,9 +510,8 @@ export default class ClassController {
         try {
             const ID_GRADE_REVIEW = Number(req.params.idGradeReview);
             const COMMENTS = await ClassService.getCommentsByIdGradeReview(ID_GRADE_REVIEW);
-            console.log(COMMENTS)
             if (Util.isNullOrUndefined(COMMENTS)) {
-                return res.status(200).json([]);
+                return res.status(200).json(COMMENTS);
             }
 
             res.status(200).json(COMMENTS);

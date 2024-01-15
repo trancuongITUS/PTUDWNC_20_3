@@ -68,9 +68,10 @@ export default class TClassDao {
 
     public static async getGradeStructureByClassId(classId: number): Promise<any> {
         const RESULT_SET: any = await this.getDao().sequelize?.query(
-            "SELECT t_grade_composition.id AS id, t_grade_composition.grade_name, t_grade_composition.grade_scale, t_grade_composition.grade_percent"
+            "SELECT t_grade_composition.id AS id, t_grade_composition.grade_name, t_grade_composition.grade_scale, t_grade_composition.grade_percent, t_grade_composition.display_no"
             + " FROM t_grade_composition"
-            + " WHERE t_grade_composition.id_class = ?",
+            + " WHERE t_grade_composition.id_class = ?"
+            + " ORDER BY t_grade_composition.display_no ASC",
             {
                 replacements: [classId],
                 type: sequelize.QueryTypes.SELECT,
@@ -106,9 +107,9 @@ export default class TClassDao {
     public static async insertGradeStructureByClassId(classId: number, gradeStructure: any): Promise<any> {
         gradeStructure.forEach(async (element: any) => {
             await this.getDao().sequelize?.query(
-                "INSERT INTO t_grade_composition(id_class, grade_name, grade_scale, grade_percent) VALUES (?, ?, ?, ?)",
+                "INSERT INTO t_grade_composition(id_class, grade_name, grade_scale, grade_percent, display_no) VALUES (?, ?, ?, ?, ?)",
                 {
-                    replacements: [classId, element.grade_name, element.grade_scale, element.grade_percent],
+                    replacements: [classId, element.grade_name, element.grade_scale, element.grade_percent, element.display_no],
                     type: sequelize.QueryTypes.INSERT,
                     raw: true,
                     logging: console.log,
@@ -237,6 +238,7 @@ export default class TClassDao {
 
     public static async joinClassByLink(classId: number, user: any): Promise<void> {
         const CLASS: TClass | null = await this.getDao().findByPk(classId);
+        console.log(classId);
         if (CLASS !== null) {
             await this.getDao().sequelize?.query(
                 "INSERT INTO r_class_user(id_class, id_user, is_owner) VALUES (?, ?, ?)",
@@ -322,18 +324,38 @@ export default class TClassDao {
             }
         );
 
-        /* TODO: Chừa những thằng trong danh sách nhưng đã map trong DB sau khi xóa -> INSERT những thằng mới. */
-
         students.forEach(async (element: any) => {
-            await this.getDao().sequelize?.query(
-                "INSERT INTO t_class_student(id_class, student_id, fullname) VALUES (?, ?, ?)",
+            const IS_EXISTED: any = await this.getDao().sequelize?.query(
+                "SELECT EXISTS(SELECT 1 FROM t_class_student WHERE t_class_student.id_class = ? AND t_class_student.student_id = ?)",
                 {
-                    replacements: [classId, element.student_id, element.fullname],
-                    type: sequelize.QueryTypes.INSERT,
+                    replacements: [classId, element.student_id.toString()],
+                    type: sequelize.QueryTypes.SELECT,
                     raw: true,
                     logging: console.log,
                 }
             )
+            if (IS_EXISTED[0].exists) {
+                await this.getDao().sequelize?.query(
+                    "UPDATE t_class_student SET fullname = ? WHERE t_class_student.id_class = ? AND t_class_student.student_id = ?",
+                    {
+                        replacements: [element.fullname, classId, element.student_id.toString()],
+                        type: sequelize.QueryTypes.UPDATE,
+                        raw: true,
+                        logging: console.log,
+                    }
+                )
+                return;
+            } else {
+                await this.getDao().sequelize?.query(
+                    "INSERT INTO t_class_student(id_class, student_id, fullname) VALUES (?, ?, ?)",
+                    {
+                        replacements: [classId, element.student_id.toString(), element.fullname],
+                        type: sequelize.QueryTypes.INSERT,
+                        raw: true,
+                        logging: console.log,
+                    }
+                )
+            }
         });
     }
 
@@ -350,11 +372,11 @@ export default class TClassDao {
             }
         )
 
-        let query = "SELECT id_class, id_class_student, student_id, fullname";
+        let query = "SELECT id_class, id_class_student, student_id, fullname, is_mapped";
         T_GRADE_COMPOSITION!.forEach((element: any) => {
             query += `, MAX(CASE WHEN id_grade_composition = ${element.id} THEN grade END) AS "${element.grade_name}"`;
         });
-        query += " FROM (SELECT r_class_student_grade.id_class, r_class_student_grade.id_class_student, t_class_student.student_id, t_class_student.fullname, t_grade_composition.id as id_grade_composition, r_class_student_grade.grade FROM r_class_student_grade LEFT JOIN t_grade_composition ON r_class_student_grade.id_grade_composition = t_grade_composition.id LEFT JOIN t_class_student ON r_class_student_grade.id_class_student = t_class_student.id WHERE r_class_student_grade.id_class = ?) AS v GROUP BY id_class, id_class_student, student_id, fullname";
+        query += " FROM (SELECT r_class_student_grade.id_class, r_class_student_grade.id_class_student, t_class_student.student_id, t_class_student.fullname, t_grade_composition.id as id_grade_composition, r_class_student_grade.grade, t_class_student.is_mapped FROM r_class_student_grade LEFT JOIN t_grade_composition ON r_class_student_grade.id_grade_composition = t_grade_composition.id LEFT JOIN t_class_student ON r_class_student_grade.id_class_student = t_class_student.id WHERE r_class_student_grade.id_class = ?) AS v GROUP BY id_class, id_class_student, student_id, fullname, is_mapped";
 
         const RESULT_SET: any = await this.getDao().sequelize?.query(
             query,
@@ -574,7 +596,7 @@ export default class TClassDao {
     }
 
     public static async getCommentsByIdGradeReview(idGradeReview: number): Promise<any> {
-        await this.getDao().sequelize?.query(
+        return await this.getDao().sequelize?.query(
             "SELECT t_grade_review_comment.id, t_grade_review_comment.id_grade_review, t_grade_review_comment.id_user, t_grade_review_comment.comment_content, m_user.fullname"
             + " FROM t_grade_review_comment"
             + " LEFT JOIN m_user ON t_grade_review_comment.id_user = m_user.id"

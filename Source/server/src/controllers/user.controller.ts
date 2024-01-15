@@ -41,10 +41,11 @@ export default class UserController {
     async updateUser(req: Request, res: Response) {
         const EMAIL: string = req.body.email;
         const FULLNAME: string = req.body.fullname;
+        const STUDENT_ID: string = req.body.studentId;
 
         const USERNAME: string = req.body.user_payload.username;
 
-        const IS_UPDATE_SUCCESS: boolean = await AuthService.update(USERNAME, EMAIL, FULLNAME);
+        const IS_UPDATE_SUCCESS: boolean = await AuthService.update(USERNAME, EMAIL, FULLNAME, STUDENT_ID);
         if (!IS_UPDATE_SUCCESS) {
             res.status(500).send({message: "Internal Server Error."});
             return;

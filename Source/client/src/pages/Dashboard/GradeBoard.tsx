@@ -27,6 +27,12 @@ const GradeBoard = () => {
     }, []);
 
     useEffect(() => {
+        getRClassUser(Number(id), Number(user.id)).then((response) => {
+            setRClassUser(response[0]);
+        });
+    }, []);
+
+    useEffect(() => {
         getGradeBoardByClassId(Number(id)).then(response => {
             if (null === gradeStructure || gradeStructure.length === 0 || undefined === gradeStructure) {
                 getGradeStructureByClassId(Number(id)).then(responseGradeStructure => {
@@ -47,8 +53,9 @@ const GradeBoard = () => {
                             GRADE_STRUCTURE
                         }
                     });
-                    if (user?.idRole === 2 && rClassUser.is_student_mapped) {
-                        NEW_GRADE_BOARD = NEW_GRADE_BOARD.filter((grade: any) => grade.student_id === user?.studentId);
+                    
+                    if (user?.idRole === 2) {
+                        NEW_GRADE_BOARD = NEW_GRADE_BOARD.filter((grade: any) => grade.is_mapped == true);
                     }
                     setGradeBoard(NEW_GRADE_BOARD);
                 });
@@ -69,8 +76,8 @@ const GradeBoard = () => {
                     GRADE_STRUCTURE
                 }
             });
-            if (user?.idRole === 2 && rClassUser.is_student_mapped) {
-                NEW_GRADE_BOARD = NEW_GRADE_BOARD.filter((grade: any) => grade.student_id === user?.studentId);
+            if (user?.idRole === 2) {
+                NEW_GRADE_BOARD = NEW_GRADE_BOARD.filter((grade: any) => grade.is_mapped == true);
             }
             setGradeBoard(NEW_GRADE_BOARD);
         });
@@ -94,11 +101,7 @@ const GradeBoard = () => {
         });
     }, [isGradeStuctureFinalized]);
 
-    useEffect(() => {
-        getRClassUser(Number(id), Number(user.id)).then((response) => {
-            setRClassUser(response[0]);
-        });
-    }, []);
+    
 
     const handleMarkAsFinal = async () => {
         if (isFinalized) {
@@ -169,7 +172,13 @@ const GradeBoard = () => {
     }
 
     const handleDownloadGradeBoard = async () => {
+        const paramBody = {
+            gradeBoard: gradeBoard,
+            gradeStructure: gradeStructure,
+        }
+
         const response = await api.get(`class/download-grade-board`, {
+            params: paramBody,
             responseType: 'blob',
         });
 
@@ -406,12 +415,12 @@ const GradeBoard = () => {
                                                     </td>
                                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                                         <div className="flex items-center space-x-3.5">
-                                                            <button className="hover:text-primary" onClick={() => setEditingGradeId(grade.student_id)}>
+                                                            {/* <button className="hover:text-primary" onClick={() => setEditingGradeId(grade.student_id)}>
                                                                 <FaPencilAlt />
                                                             </button>
                                                             <button className="hover:text-primary" onClick={() => setEditingGradeId(null)}>
                                                                 <FaCheck />
-                                                            </button>
+                                                            </button> */}
                                                             <Link className="hover:text-primary" to={`/class/grade-review/${id}/${grade.id_class_student}`}>
                                                                 <FaCommentDots />
                                                             </Link>

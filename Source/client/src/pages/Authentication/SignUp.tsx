@@ -95,7 +95,7 @@ const SignUp = () => {
                   control={control}
                   name="fullname"
                   errors={errors}
-                  label="Full name"
+                  label="Fullname"
                   icon={<MdDriveFileRenameOutline />}
                 />
 

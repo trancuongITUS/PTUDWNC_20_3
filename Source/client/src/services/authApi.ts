@@ -35,5 +35,6 @@ export const logoutUserFn = async (username?: string) => {
   const response = await api.post<IGenericResponse>('auth/logout', {
     username,
   });
+  console.log(response.data)
   return response.data;
 };

@@ -10,7 +10,6 @@ const GradeReview = () => {
 
   useEffect(() => {
     getGradesByIdClassAndIdClassStudent(Number(idClass), Number(idClassStudent)).then((res: any) => {
-        console.log(res)
         setGrades(res);
     });
   }, [])
@@ -28,7 +27,7 @@ const GradeReview = () => {
         </div>
         {grades.map((grade: any, index: number) => (
             <Review key={index} idGradeReview={Number(grade.id_grade_review)} idClassStudent={Number(idClassStudent)} idClass={Number(idClass)} gradeCompositionId={grade.id_grade_composition} gradeName={grade.grade_name} title={grade.review_title} explanation={grade.student_explanation} expectationGrade={grade.student_expectation_grade}/>
-        )
+          )
         )}
     </>
   );

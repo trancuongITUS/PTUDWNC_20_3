@@ -12,11 +12,11 @@ export default class MUserDao {
         await this.getDao().create(obj);
     }
 
-    public static async update(username: string, email: string, fullname: string): Promise<void> {
+    public static async update(username: string, email: string, fullname: string, studentId: string): Promise<void> {
         let now = new Date();
 
         await this.getDao().update(
-            {email: email, fullname: fullname, lastUpdDate: now}, {
+            {email: email, fullname: fullname, studentId: studentId, lastUpdDate: now}, {
                 where: {
                     username: username,
                 }

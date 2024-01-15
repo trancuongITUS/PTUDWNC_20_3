@@ -5,6 +5,7 @@ import { getGradeStructureByClassId, getIsGradeStructureFinalized, markGradeStru
 import { ToastContainer, toast } from 'react-toastify';
 import { Link, useParams } from 'react-router-dom';
 import { useStateContext } from '../../context';
+import { FaCheck, FaPencilAlt, FaTimes } from 'react-icons/fa';
 
 const COLORS_ARRAY = ['#10B981', '#375E83', '#259AE6', '#FFA70B', '#FF5733', '#C70039', '#900C3F', '#6A0573', '#FFD700', '#008080'];
 
@@ -54,7 +55,6 @@ const GradeStructureChart: React.FC = () => {
     const [series, setSeries] = useState<number[]>([]);
     const [options, setOptions] = useState<ApexOptions>({});
     const [editingGradeId, setEditingGradeId] = useState<number | null>(null);
-    const [selectedGrade, setSelectedGrade] = useState<any>(null);
     const [isFinalized, setIsFinalized] = useState<any>(null);
     const stateContext = useStateContext();
     const user = stateContext.state.authUser;
@@ -108,6 +108,16 @@ const GradeStructureChart: React.FC = () => {
         setGradeStructureTable(newGradeStructure);
     }
 
+    const handleInputDisplayNo = (grade: any) => (event: any) => {
+        const newGradeStructure: any = gradeStructureTable.map((item: any) => {
+            if (item.id === grade.id) {
+                item.display_no = event.target.value;
+            }
+            return item;
+        });
+        setGradeStructureTable(newGradeStructure);
+    }
+
     const handleInputNameChange = (grade: any) => (event: any) => {
         const newGradeStructure: any = gradeStructureTable.map((item: any) => {
             if (item.id === grade.id) {
@@ -118,10 +128,6 @@ const GradeStructureChart: React.FC = () => {
         setGradeStructureTable(newGradeStructure);
     }
 
-    const handleClickRow = (grade: any) => () => {
-        setSelectedGrade(grade);
-    }
-
     const handleAdd = () => {
         const newGradeStructure: any = [...gradeStructureTable];
         const ID = new Date().getTime();
@@ -130,15 +136,15 @@ const GradeStructureChart: React.FC = () => {
             grade_name: '',
             grade_scale: 0,
             grade_percent: 0,
+            display_no: 0,
         }
         newGradeStructure.push(NEW_GRADE_COMPOSITION);
         setEditingGradeId(NEW_GRADE_COMPOSITION.id);
         setGradeStructureTable(newGradeStructure);
     }
 
-    const handleDelete = () => {
-        if (!selectedGrade) return;
-        const newGradeStructure: any = gradeStructureTable.filter((grade: any) => grade.id !== selectedGrade.id);
+    const handleDeleteId = (id: number) => () => {
+        const newGradeStructure: any = gradeStructureTable.filter((grade: any) => grade.id !== id);
         setGradeStructureTable(newGradeStructure);
     }
 
@@ -171,6 +177,7 @@ const GradeStructureChart: React.FC = () => {
                 grade_name: grade.grade_name,
                 grade_scale: Number(grade.grade_scale),
                 grade_percent: Number(grade.grade_percent),
+                display_no: Number(grade.display_no),
             }
         });
         
@@ -225,15 +232,14 @@ const GradeStructureChart: React.FC = () => {
                 {!isFinalized && user?.idRole === 3 ? (
                     <div className="flex justify-center space-x-1 mt-4">
                         <button onClick={handleAdd} className="px-4 py-0 border border-gray-300 rounded shadow hover:bg-gray-200 hover:text-black">Add</button>
-                        <button onClick={handleDelete} className="px-4 py-0 border border-gray-300 rounded shadow hover:bg-gray-200 hover:text-black">Delete</button>
                         <button onClick={handleUpdateGradeStructure} className="px-4 py-0 border border-gray-300 rounded shadow hover:bg-gray-200 hover:text-black">Save</button>
                     </div>
                 ) : <></>}
 
                 <div className="mt-4">
                     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                        <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-                            <div className="col-span-4 hidden items-center sm:flex">
+                        <div className="grid grid-cols-8 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                            <div className="col-span-2 hidden items-center sm:flex">
                                 <p className="font-medium">Grade Composition</p>
                             </div>
                             <div className="col-span-2 flex items-center">
@@ -242,16 +248,21 @@ const GradeStructureChart: React.FC = () => {
                             <div className="col-span-2 flex items-center">
                                 <p className="font-medium">Percent</p>
                             </div>
+                            <div className="col-span-1 flex items-center">
+                                <p className="font-medium">Display No</p>
+                            </div>
+                            <div className="col-span-1 flex items-center">
+                                <p className="font-medium">Action</p>
+                            </div>
                         </div>
 
                         {gradeStructureTable.map((grade: any, index: number) => (
-                            <div key={index} className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5" onClick={handleClickRow(grade)}>
-                                <div className="col-span-4 hidden items-center sm:flex">
+                            <div key={index} className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+                                <div className="col-span-2 hidden items-center sm:flex">
                                     {editingGradeId === grade.id ? (
                                         <input
                                             type="text"
                                             className="w-32 h-8 border border-stroke rounded-sm px-2 text-sm text-black dark:text-white"
-                                            onBlur={() => setEditingGradeId(null)}
                                             onChange={handleInputNameChange(grade)}
                                             value={grade.grade_name}
                                         />
@@ -264,12 +275,11 @@ const GradeStructureChart: React.FC = () => {
                                         <input
                                             type="text"
                                             className="w-16 h-8 border border-stroke rounded-sm px-2 text-sm text-black dark:text-white"
-                                            onBlur={() => setEditingGradeId(null)}
                                             onChange={handleInputScaleChange(grade)}
                                             value={grade.grade_scale}
                                         />
                                     ) : (
-                                        <p className="text-sm text-black dark:text-white" onClick={() => setEditingGradeId(grade.id)}>{grade.grade_scale}</p>
+                                        <p className="text-sm text-black dark:text-white">{grade.grade_scale}</p>
                                     )}
                                 </div>
                                 <div className="col-span-2 flex items-center">
@@ -277,13 +287,35 @@ const GradeStructureChart: React.FC = () => {
                                         <input
                                             type="text"
                                             className="w-16 h-8 border border-stroke rounded-sm px-2 text-sm text-black dark:text-white"
-                                            onBlur={() => setEditingGradeId(null)}
                                             onChange={handleInputPercentChange(grade)}
                                             value={grade.grade_percent}
                                         />
                                     ) : (
-                                        <p className="text-sm text-black dark:text-white" onClick={() => setEditingGradeId(grade.id)}>{grade.grade_percent}</p>
+                                        <p className="text-sm text-black dark:text-white">{grade.grade_percent}</p>
                                     )}
+                                </div>
+                                <div className="col-span-1 flex items-center">
+                                    {editingGradeId === grade.id ? (
+                                        <input
+                                            type="text"
+                                            className="w-16 h-8 border border-stroke rounded-sm px-2 text-sm text-black dark:text-white"
+                                            onChange={handleInputDisplayNo(grade)}
+                                            value={grade.display_no}
+                                        />
+                                    ) : (
+                                        <p className="text-sm text-black dark:text-white">{grade.display_no}</p>
+                                    )}
+                                </div>
+                                <div className="col-span-1 flex items-center space-x-3.5">
+                                    <button className="hover:text-primary" onClick={() => setEditingGradeId(grade.id)}>
+                                        <FaPencilAlt />
+                                    </button>
+                                    <button className="hover:text-primary" onClick={() => setEditingGradeId(null)}>
+                                        <FaCheck />
+                                    </button>
+                                    <button className="hover:text-primary" onClick={handleDeleteId(grade.id)}>
+                                        <FaTimes/>
+                                    </button>
                                 </div>
                             </div>
                         ))}

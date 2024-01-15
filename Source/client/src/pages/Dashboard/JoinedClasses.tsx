@@ -18,6 +18,7 @@ const JoinedClasses = () => {
       if (response.success) {
         getAllClassesJoined().then(response => {
           setClasses(response.resultList);
+          setInvitationCode('');
         });
         toast.success(response.message);
       } else {
