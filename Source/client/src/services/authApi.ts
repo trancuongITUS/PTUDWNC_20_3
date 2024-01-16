@@ -38,3 +38,8 @@ export const logoutUserFn = async (username?: string) => {
   console.log(response.data)
   return response.data;
 };
+
+export const googleOAuthFn = async () => {
+  const response = await api.get<IGenericResponse>('auth/google');
+  return response.data;
+}

@@ -142,6 +142,7 @@ const GradeBoard = () => {
                     }
                     return gradeStructureItem;
                 });
+                grade.total_grade = newGradeStructure.reduce((total: number, item: any) => total += Number(item.grade) / Number(item.grade_scale) * Number(item.grade_percent), 0);
                 return {
                     ...gradeItem,
                     GRADE_STRUCTURE: newGradeStructure

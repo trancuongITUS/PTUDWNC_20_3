@@ -82,6 +82,11 @@ export default class AuthController {
                 }
             }
 
+            if (user?.isVerifiedEmail == false) {
+                res.status(401).json({message: "Your account is not active"});
+                return;
+            }
+
             const DATA_FOR_ACCESS_TOKEN = {
                 user_id: user?.id,
                 username: user?.username,
@@ -111,8 +116,17 @@ export default class AuthController {
                 await AuthService.updateRefreshToken(user?.id!, refreshToken);
             }
 
-            res.cookie('accessToken', ACCESS_TOKEN);
-            res.cookie('refreshToken', refreshToken);
+            res.cookie('accessToken', ACCESS_TOKEN, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+            });
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+            
+            });
             return res.status(200).json({
                 message: "Login OK",
                 user: {

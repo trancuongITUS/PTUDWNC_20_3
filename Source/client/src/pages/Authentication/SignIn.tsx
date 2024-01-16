@@ -9,7 +9,7 @@ import { RiLockPasswordLine } from 'react-icons/ri';
 import SubmitButton from '../../components/form/SubmitButton';
 import { useMutation } from '@tanstack/react-query';
 import { useStateContext } from '../../context';
-import { loginUserFn } from '../../services/authApi';
+import { googleOAuthFn, loginUserFn } from '../../services/authApi';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 
@@ -72,7 +72,7 @@ const SignIn = () => {
       };
       loginUser(loginInput);
     }
-  }, [redirectAccount]);
+  }, []);
 
   const onSubmitHandler: SubmitHandler<LoginInput> = values => {
     // // 👇 Executing the loginUser Mutation
@@ -82,6 +82,10 @@ const SignIn = () => {
   const onErrorHandler: SubmitErrorHandler<LoginInput> = values => {
     console.log(values);
   };
+
+  const handleGoogleBtn = async () => {
+    window.location.href = 'http://localhost:8080/api/v1/auth/google'
+  }
 
   return (
     <>
@@ -122,7 +126,8 @@ const SignIn = () => {
                   />
                 </div>
 
-                <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+              </form>
+                <button onClick={handleGoogleBtn} className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>
                     <svg
                       width="20"
@@ -173,7 +178,6 @@ const SignIn = () => {
                     </Link>
                   </p>
                 </div>
-              </form>
             </div>
           </div>
         </div>

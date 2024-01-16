@@ -79,6 +79,15 @@ const Review = (reviewProp: ReviewProps) => {
                         <h5 className="text-xl font-semibold text-black dark:text-white">
                             {reviewProp.gradeName}
                         </h5>
+                        <div>
+                            <input
+                                type="text"
+                                className="w-64 h-6 border-gray-300 rounded shadow hover:bg-gray-200 px-2 text-sm text-black dark:text-white mr-2"
+                                placeholder='Enter the invitation code'
+                                // onChange={(e) => setInvitationCode(e.target.value)}
+                            />
+                            <button className="px-4 py-0 border border-gray-300 rounded shadow hover:bg-gray-200 hover:text-black">Update Grade</button>
+                        </div>
                     </div>
                     <hr className="mt-1 mb-4"/>
                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
