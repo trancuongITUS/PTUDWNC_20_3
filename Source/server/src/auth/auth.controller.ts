@@ -116,17 +116,8 @@ export default class AuthController {
                 await AuthService.updateRefreshToken(user?.id!, refreshToken);
             }
 
-            res.cookie('accessToken', ACCESS_TOKEN, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none',
-            });
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none',
-            
-            });
+            res.cookie('accessToken', ACCESS_TOKEN);
+            res.cookie('refreshToken', refreshToken);
             return res.status(200).json({
                 message: "Login OK",
                 user: {
